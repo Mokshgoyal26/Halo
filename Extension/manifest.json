@@ -1,0 +1,23 @@
+{
+    "manifest_version":3,
+    "name": "Halo (v0)",
+    "description": "Experimental floating sidebar window with page context",
+    "version":"0.0.1",
+
+    "action":{
+        "default_title":"Halo(v0)"
+    },
+
+    "permissions":[],
+
+    "background":{
+        "service_worker":"service-worker/background.js"
+    },
+
+    "content_scripts":[{
+        "matches":["<all_urls>"],
+        "js":["content-scripts/script.js"],
+        "run_at":"document_idle"
+    }]
+
+}
