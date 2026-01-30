@@ -18,6 +18,15 @@
         "matches":["<all_urls>"],
         "js":["content-scripts/script.js"],
         "run_at":"document_idle"
-    }]
+    }],
+
+    "web_accessible_resources":[
+        {
+
+            "resources":["content-scripts/sidebar.html","content-scripts/sidebar.css","assets/sidebar-logo(2).png"],
+            "matches":["<all_urls>"]
+        }
+    
+    ]
 
 }

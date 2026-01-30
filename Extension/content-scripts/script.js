@@ -75,11 +75,43 @@ const collectText = () =>{
 }
             
 
-/*const dataCollected = collectText();
-console.log('page data : ',dataCollected);*/
+const dataCollected = collectText;
+console.log('page data : ',dataCollected);
 
 // sending our page context to the background file
 chrome.runtime.sendMessage({
     type:'Page_Context_Ready',
     payload:collectText
 })
+
+
+// inject html , css into webpages 
+fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
+    .then(res => res.text())
+    .then(html => {
+        console.log('html fetched', html);
+        const wrapper = document.createElement('template');
+        wrapper.innerHTML = html.trim();
+
+        document.body.appendChild(wrapper.content.firstChild);
+
+        // inject css
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = chrome.runtime.getURL('content-scripts/sidebar.css');
+        document.head.appendChild(link);
+
+        /*const sidebarLogo = document.querySelector('.logo');
+        sidebarLogo.style.backgroundImage = `url(${chrome.runtime.getURL('assets/sidebar-logo(2).png')})`;*/
+
+        /*const sidebarLogo = document.querySelector('.logo');
+
+        sidebarLogo.style.setProperty(
+            'background-image',
+            `url(${chrome.runtime.getURL('assets/logo.png')})`,
+            'important'
+        );
+
+        sidebarLogo.style.setProperty('background-color', 'red');*/
+
+    });
