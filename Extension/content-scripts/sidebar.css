@@ -1,0 +1,84 @@
+.sidebar-extension-container{
+    position: fixed;
+    display:flex;
+    flex-direction:column;
+    top: 20px;
+    right: 30px;
+    color: white;
+    width:358px;
+    height:436px;
+    border-radius:8px;
+    overflow:hidden;
+    background-color:#2B2B2B;
+    border:2px solid #2B2B2B;
+    z-index: 2147483647;
+    box-sizing:border-box;
+}
+
+.sidebar-header-container{
+    background-color:#2B2B2B;
+    color:black;
+    height:42px;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header-left-container{
+    margin-left:10px;
+    gap:10px;
+    display:flex;
+    align-items:center;
+
+}
+
+.logo {
+    width: 20px;
+    height: 20px;
+    border-radius:50%;
+    overflow:hidden;
+    background-image: url('chrome-extension://jidodiahphhkpiiggcdbcboecemgdeln/assets/sidebar-logo(2).png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+}
+
+.extension-name{
+    color:white;
+    font-size:16px;
+    font-weight:500;
+}
+
+.header-right-container{
+    padding-right:15px;
+}
+
+.close-btn{
+    color:white;
+    font-size:16px;
+    font-weight:500;
+}
+
+.sidebar-main-container{
+    height:100%;
+    background-color:#0F0E0E;
+    border-top-left-radius:14px;
+    border-top-right-radius:14px;
+    
+}
+
+.sidebar-content-div{
+    height:260px;
+}
+
+.sidebar-footer-container{
+    height:120px;
+    margin-left:8px;
+    margin-right:8px;
+    background-color:#2B2B2B;
+    border-radius:8px;
+    flex-shrink : 0;
+}
