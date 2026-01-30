@@ -121,6 +121,7 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         console.log('header : ',header);
 
         initDrag(sidebar,header);
+        closeButtonFeature(sidebar);
 
     });
 
@@ -208,3 +209,13 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
             rafId = null;
         }
     }
+
+
+
+function closeButtonFeature(sidebar){
+
+    const closeButton = document.querySelector('.close-btn');
+    closeButton.addEventListener('click', () =>{
+            sidebar.style.display = 'none';
+    })
+}
