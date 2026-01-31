@@ -123,6 +123,20 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         initDrag(sidebar,header);
         closeButtonFeature(sidebar);
 
+
+        const content = document.querySelector('.sidebar-content-div');
+        const fadeContent = document.querySelector('.sidebar-fade-content-div');
+
+        updateFade(content , fadeContent);
+
+        content.addEventListener('scroll',() =>{
+            updateFade(content,fadeContent);
+        });
+
+        window.addEventListener('resize',() =>{
+            updateFade(content,fadeContent);
+        });
+
     });
 
 
@@ -136,9 +150,6 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
         let startMouseX = 0;
         let startMouseY = 0;
-
-        let startSidebarX = 0;
-        let startSidebarY = 0;
 
         let currentX = 0;
         let currentY = 0;
@@ -219,3 +230,16 @@ function closeButtonFeature(sidebar){
             sidebar.style.display = 'none';
     })
 }
+
+
+function updateFade(content , fadeContent){
+
+    const canScroll = content.scrollHeight > content.clientHeight;
+
+    const isBottom = content.scrollTop + content.clientHeight >= content.scrollHeight - 1;
+
+    fadeContent.style.opacity = (canScroll && !isBottom) ? 1 : 0;
+}
+
+
+
