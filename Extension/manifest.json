@@ -23,7 +23,14 @@
     "web_accessible_resources":[
         {
 
-            "resources":["content-scripts/sidebar.html","content-scripts/sidebar.css","assets/sidebar-logo(2).png"],
+            "resources":[
+                            "content-scripts/sidebar.html",
+                            "content-scripts/sidebar.css",
+                            "assets/sidebar-logo(2).png",
+                            "assets/empty-state-logo.png",
+                            "assets/close-button-2.svg"
+                        ],
+                        
             "matches":["<all_urls>"]
         }
     

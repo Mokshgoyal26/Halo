@@ -137,6 +137,11 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
             updateFade(content,fadeContent);
         });
 
+
+        // injecting close-btn src
+        const closeIcon = document.querySelector('.btn-icon');
+        closeIcon.src = chrome.runtime.getURL("assets/close-button-2.svg");
+
     });
 
 
@@ -241,5 +246,16 @@ function updateFade(content , fadeContent){
     fadeContent.style.opacity = (canScroll && !isBottom) ? 1 : 0;
 }
 
+
+
+let contentItems = [];
+
+function render(){
+    if(contentItems.length === 0){
+        renderEmptyState();
+    }else{
+        renderContent();
+    }
+}
 
 

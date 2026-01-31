@@ -2,6 +2,7 @@
     position: fixed;
     display:flex;
     flex-direction:column;
+    font-family: Inter, system-ui, sans-serif;
     top: 20px;
     right: 30px;
     color: white;
@@ -27,7 +28,7 @@
 }
 
 .header-left-container{
-    margin-left:10px;
+    padding-left:15px;
     gap:10px;
     display:flex;
     align-items:center;
@@ -39,7 +40,7 @@
     height: 20px;
     border-radius:50%;
     overflow:hidden;
-    background-image: url('chrome-extension://jidodiahphhkpiiggcdbcboecemgdeln/assets/sidebar-logo(2).png');
+    background-image: url('../assets/sidebar-logo(2).png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -48,7 +49,7 @@
 
 .extension-name{
     color:white;
-    font-size:16px;
+    font-size:20px;
     font-weight:500;
 }
 
@@ -56,12 +57,54 @@
     padding-right:15px;
 }
 
-.close-btn{
-    color:white;
-    font-size:16px;
-    font-weight:500;
-    cursor:pointer;
+.close-btn {
+    all: unset;
+    box-sizing: border-box;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+    cursor: pointer;
+
+    background: transparent;
+    padding: 0;
+
+    transition:
+        background-color 120ms linear,
+        transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+
+    will-change: transform;
 }
+
+.btn-icon {
+    width: 19px;
+    height: 19px;
+    display: block;
+
+    opacity: 0.85;
+    pointer-events: none;
+
+    transition: opacity 120ms linear;
+}
+
+.close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-btn:hover .btn-icon {
+    opacity: 1;
+}
+
+.close-btn:active {
+    transform: scale(0.92);
+}
+
+
 
 .sidebar-main-container{
     display:flex;
@@ -136,3 +179,83 @@
     overflow:hidden;
     min-height:0;
 }
+
+.empty-state-container{
+    display:flex;
+    flex-direction: column;
+}
+
+.empty-state-header{
+    display:flex;
+    flex-direction: row;
+    gap:10px;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.empty-state-logo {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+
+    background-image: url('../assets/empty-state-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.empty-state-title{
+    font-size:30px;
+    font-weight:700;
+    color:#4895EF;
+    
+}
+
+.empty-state-intro{
+    font-size:20px;
+    font-weight:500;
+    margin-bottom:15px;
+}
+
+.suggestions-buttons-div{
+    margin-top:13px;
+    display:flex;
+    flex-direction: column;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.suggestion-btn{
+    all:unset;
+    box-sizing:border-box;
+    display:inline-flex;
+    align-items:center;
+
+    border-radius:12px;
+    padding:6px 12px;
+
+    font-size:13px;
+    line-height:1.4;
+
+    background-color: rgba(206, 206, 217, 0.07);
+    color: rgba(255, 255, 255, 0.85);
+
+    cursor: pointer;
+
+    transition:
+        background-color 120ms linear,
+        transform 80ms linear,
+        opacity 120ms linear;
+
+    will-change: transform;
+}
+
+.suggestion-btn:hover {
+    background-color: rgba(206, 206, 217, 0.12);
+}
+
+.suggestion-btn:active {
+    transform: scale(0.96);
+}
+
+
