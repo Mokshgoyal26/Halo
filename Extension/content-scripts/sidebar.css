@@ -6,7 +6,7 @@
     right: 30px;
     color: white;
     width:358px;
-    height:436px;
+    height:426px;
     border-radius:8px;
     overflow:hidden;
     background-color:#2B2B2B;
@@ -60,10 +60,14 @@
     color:white;
     font-size:16px;
     font-weight:500;
+    cursor:pointer;
 }
 
 .sidebar-main-container{
-    height:100%;
+    display:flex;
+    flex:1;
+    flex-direction: column;
+    min-height:0;
     background-color:#0F0E0E;
     border-top-left-radius:14px;
     border-top-right-radius:14px;
@@ -71,14 +75,64 @@
 }
 
 .sidebar-content-div{
-    height:260px;
+    padding-left:20px;
+    padding-top:20px;
+    flex:1;
+    overflow-y:auto;
+}
+
+/* chrome , edge , safari */
+.sidebar-content-div::-webkit-scrollbar{
+    height:0;
+    width:0;
+}
+
+/* firefox */
+.sidebar-content-div{
+    scrollbar-width: none;
+}
+
+/* older edge */
+.sidebar-content-div{
+    -ms-overflow-style: none;
 }
 
 .sidebar-footer-container{
-    height:120px;
+    height:110px;
+    margin-top:10px;
     margin-left:8px;
     margin-right:8px;
+    margin-bottom:10px;
     background-color:#2B2B2B;
     border-radius:8px;
     flex-shrink : 0;
+}
+
+
+
+
+.sidebar-fade-content-div{
+    position:absolute;
+    right:0;
+    left:0;
+    bottom:0;
+    height:48px;
+
+    background : linear-gradient(
+        to bottom,
+        rgba(17, 17, 17, 0),
+        rgba(17, 17, 17, 0.9)
+    );
+
+    pointer-events:none;
+    z-index:5;
+}
+
+.sidebar-scroll-wrapper{
+    position:relative;
+    display:flex;
+    flex-direction: column;
+    flex:1;
+    overflow:hidden;
+    min-height:0;
 }
