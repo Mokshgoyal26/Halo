@@ -75,13 +75,13 @@ const collectText = () =>{
 }
             
 
-const dataCollected = collectText;
+const dataCollected = collectText();
 console.log('page data : ',dataCollected);
 
 // sending our page context to the background file
 chrome.runtime.sendMessage({
     type:'Page_Context_Ready',
-    payload:collectText
+    payload:dataCollected
 })
 
 
@@ -141,6 +141,18 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         // injecting close-btn src
         const closeIcon = document.querySelector('.btn-icon');
         closeIcon.src = chrome.runtime.getURL("assets/close-button-2.svg");
+
+
+        const container = document.querySelector('.suggestions-buttons-div');
+
+        renderSuggestions(container);
+
+        document.addEventListener('selectionchange',() =>{
+            renderSuggestions(container);
+            requestAnimationFrame(() =>{
+                updateFade(content,fadeContent);
+            })
+        })
 
     });
 
@@ -258,4 +270,73 @@ function render(){
     }
 }
 
+
+
+const CAPABILITIES =  [
+    {id:'selection',label:'explain selected text'},
+    {id:'video-summarizer',label:'summarize video'},
+    {id:'web-page',label:'explain this webpage'},
+    {id:'general',label:'Ask anything'}
+];
+
+
+const isYoutubePage = () =>{
+    return location.hostname.includes('youtube.com') && location.pathname.includes('/watch');
+};
+
+const hasContextSelection = () =>{
+        const selection = window.getSelection();
+        return selection && selection.toString().trim().length > 0;
+};
+
+const contextResolver = (cap,context) =>{
+
+    if(cap.id === 'selection'){
+        
+        return context.hasSelection ? 'explain selected text' : null;
+    }
+
+    if(cap.id === 'video-summarizer'){
+        return context.hasYoutubePage ? 'summarize video' : 'Boost my day';
+    }
+
+    if(cap.id === 'web-page'){
+        return 'explain this webpage';
+    }
+
+    return null;
+}
+
+const getContext = () =>{
+    return{
+        hasYoutubePage : isYoutubePage(),
+        hasSelection : hasContextSelection()
+    };
+}
+
+
+function renderSuggestions(container){
+        if(!container) return;
+
+        container.innerHTML = '';
+        const context = getContext();
+        
+        CAPABILITIES.forEach(cap =>{
+            const label = contextResolver(cap,context);
+
+            if(!label) return;
+
+            const btn = document.createElement('button');
+            btn.className = 'suggestion-btn';
+            btn.textContent = label;
+
+            if(cap.id === 'selection' && !context.hasSelection){
+                btn.disabled = 'true';
+            }
+
+            container.appendChild(btn);
+
+
+        });
+}
 

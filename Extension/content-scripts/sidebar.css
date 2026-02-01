@@ -111,6 +111,7 @@
     flex:1;
     flex-direction: column;
     min-height:0;
+    height:100%; /* added*/
     background-color:#0F0E0E;
     border-top-left-radius:14px;
     border-top-right-radius:14px;
@@ -150,9 +151,6 @@
     border-radius:8px;
     flex-shrink : 0;
 }
-
-
-
 
 .sidebar-fade-content-div{
     position:absolute;
