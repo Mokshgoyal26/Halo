@@ -256,4 +256,55 @@
     transform: scale(0.96);
 }
 
+.text-input{
+    flex:1;
+    resize: none;
+    box-sizing:border-box;
+    background-color:#2B2B2B;
+    padding:8px 10px;
+    height:60px;
+    color: #fff;
+    border: none;
+    outline: none;
+}
 
+.text-input:focus{
+    border-color: #4f46e5;
+}
+
+.input-div{
+    display:flex;
+    gap:8px;
+    padding:10px 12px;
+    
+}
+
+.send-btn{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    cursor:pointer;
+}
+
+.text-input::placeholder{
+    font-size:14px;
+    font-weight:500;
+    color:#fff;
+}
+
+.text-input::-webkit-scrollbar{
+    width:6px;
+}
+
+.text-input::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.text-input::-webkit-scrollbar-thumb{
+    background-color:#555;
+    border-radius:4px;
+}
+
+.text-input::-webkit-scrollbar-thumb:hover {
+    background-color: #777;
+}
