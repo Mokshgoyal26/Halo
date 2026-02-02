@@ -82,40 +82,55 @@ console.log('page data : ',dataCollected);
 chrome.runtime.sendMessage({
     type:'Page_Context_Ready',
     payload:dataCollected
-})
+});
 
 
-// inject html , css into webpages 
-fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
-    .then(res => res.text())
-    .then(html => {
-        console.log('html fetched', html);
-        const wrapper = document.createElement('template');
-        wrapper.innerHTML = html.trim();
+// now added shadow dom
 
-        document.body.appendChild(wrapper.content.firstChild);
+const host  = document.createElement('div');
+host.id = 'halo-shadow-dom';
 
-        // inject css
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = chrome.runtime.getURL('content-scripts/sidebar.css');
-        document.head.appendChild(link);
+Object.assign(host.style,{
+    position:'fixed',
+    inset : '0',
+    zIndex:'2147483647',
+    pointerEvents:'none'
+});
 
-        /*const sidebarLogo = document.querySelector('.logo');
-        sidebarLogo.style.backgroundImage = `url(${chrome.runtime.getURL('assets/sidebar-logo(2).png')})`;*/
+document.documentElement.appendChild(host);
 
-        /*const sidebarLogo = document.querySelector('.logo');
+const shadow = host.attachShadow({mode:'open'});
 
-        sidebarLogo.style.setProperty(
-            'background-image',
-            `url(${chrome.runtime.getURL('assets/logo.png')})`,
-            'important'
-        );
 
-        sidebarLogo.style.setProperty('background-color', 'red');*/
+async function mountSidebar(shadow){
+    const [html,css] = await Promise.all([
+        fetch(chrome.runtime.getURL('content-scripts/sidebar.html')).then(r => r.text()),
+        fetch(chrome.runtime.getURL('content-scripts/sidebar.css')).then(r => r.text())
+    ]);
 
-        const sidebar = document.querySelector('.sidebar-extension-container');
-        const header = document.querySelector('.sidebar-header-container');
+    // html
+    const template = document.createElement('template');
+    template.innerHTML = html.trim();
+    shadow.appendChild(template.content.cloneNode(true));
+
+
+    // css - resolve relative asset URLs for shadow DOM (inlined CSS resolves relative to page, not extension)
+    const baseUrl = chrome.runtime.getURL('assets/');
+    const resolvedCss = css.replace(/\.\.\/assets\//g, baseUrl);
+    const style = document.createElement('style');
+    style.textContent = resolvedCss;
+    shadow.appendChild(style);
+
+    initSidebarUI(shadow);
+}
+
+mountSidebar(shadow);
+
+
+function initSidebarUI(shadow){
+    
+        const sidebar = shadow.querySelector('.sidebar-extension-container');
+        const header = shadow.querySelector('.sidebar-header-container');
 
         // making border-color changes active while dragging 
         let isDragging = false;
@@ -133,11 +148,13 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         });
 
         initDrag(sidebar,header);
-        closeButtonFeature(sidebar);
+
+        const closeBtn = shadow.querySelector('.close-btn');
+        closeButtonFeature(sidebar, closeBtn);
 
 
-        const content = document.querySelector('.sidebar-content-div');
-        const fadeContent = document.querySelector('.sidebar-fade-content-div');
+        const content = shadow.querySelector('.sidebar-content-div');
+        const fadeContent = shadow.querySelector('.sidebar-fade-content-div');
 
         updateFade(content , fadeContent);
 
@@ -151,18 +168,18 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
 
         // injecting close-btn src
-        const closeIcon = document.querySelector('.close-btn-icon');
+        const closeIcon = shadow.querySelector('.close-btn-icon');
         closeIcon.src = chrome.runtime.getURL("assets/close-button-2.svg");
 
         // injecting send-btn src 
-        const sendIcon = document.querySelector('.send-btn-icon');
+        const sendIcon = shadow.querySelector('.send-btn-icon');
         sendIcon.src = chrome.runtime.getURL('assets/send-button.svg');
 
         // injecting upload-btn-src
-        const uploadIcon = document.querySelector('.upload-btn-icon');
+        const uploadIcon = shadow.querySelector('.upload-btn-icon');
         uploadIcon.src = chrome.runtime.getURL('assets/upload-file-button.svg');
 
-        const container = document.querySelector('.suggestions-buttons-div');
+        const container = shadow.querySelector('.suggestions-buttons-div');
 
         renderSuggestions(container);
 
@@ -176,14 +193,14 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         let contentMessages = [];
 
         const scrollToBottom = () =>{
-            const scrollWrapper = document.querySelector('.sidebar-scroll-wrapper');
+            const scrollWrapper = shadow.querySelector('.sidebar-scroll-wrapper');
 
             scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
         }
 
         const renderUi = () =>{
-            const emptyState = document.querySelector('.empty-state-container');
-            const contentState = document.querySelector('.content-state');
+            const emptyState = shadow.querySelector('.empty-state-container');
+            const contentState = shadow.querySelector('.content-state');
 
             if(contentMessages.length === 0){
                 emptyState.style.display = 'flex';
@@ -195,8 +212,8 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
             }
         }
 
-        const userInput = document.querySelector('.text-input');
-        const sendbtn = document.querySelector('.send-btn');
+        const userInput = shadow.querySelector('.text-input');
+        const sendbtn = shadow.querySelector('.send-btn');
 
         sendbtn.addEventListener('click',() =>{
             handleSend();
@@ -244,7 +261,7 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
 
         const renderMessages = () =>{
-                const contentState = document.querySelector('.content-state');
+                const contentState = shadow.querySelector('.content-state');
                 contentState.innerHTML = '';
 
                 contentMessages.forEach(msg =>{
@@ -257,8 +274,8 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
                 scrollToBottom();
         };
-        
-    });
+}
+
 
 
     function initDrag(sidebar,header){
@@ -344,12 +361,12 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
 
 
-function closeButtonFeature(sidebar){
+function closeButtonFeature(sidebar,closeBtn){
 
-    const closeButton = document.querySelector('.close-btn');
-    closeButton.addEventListener('click', () =>{
+    closeBtn.addEventListener('click', () =>{
             sidebar.style.display = 'none';
     })
+
 }
 
 
