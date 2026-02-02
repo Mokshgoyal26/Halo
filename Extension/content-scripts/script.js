@@ -117,8 +117,20 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
         const sidebar = document.querySelector('.sidebar-extension-container');
         const header = document.querySelector('.sidebar-header-container');
 
-        console.log('sidebar : ',sidebar);
-        console.log('header : ',header);
+        // making border-color changes active while dragging 
+        let isDragging = false;
+
+        header.addEventListener('mousedown', () => {
+            isDragging = true;
+            sidebar.classList.add('active');
+        });
+
+        document.addEventListener('mouseup', () => {
+            if(!isDragging) return;
+
+            isDragging = false;
+            sidebar.classList.remove('active');
+        });
 
         initDrag(sidebar,header);
         closeButtonFeature(sidebar);
@@ -139,9 +151,16 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
 
         // injecting close-btn src
-        const closeIcon = document.querySelector('.btn-icon');
+        const closeIcon = document.querySelector('.close-btn-icon');
         closeIcon.src = chrome.runtime.getURL("assets/close-button-2.svg");
 
+        // injecting send-btn src 
+        const sendIcon = document.querySelector('.send-btn-icon');
+        sendIcon.src = chrome.runtime.getURL('assets/send-button.svg');
+
+        // injecting upload-btn-src
+        const uploadIcon = document.querySelector('.upload-btn-icon');
+        uploadIcon.src = chrome.runtime.getURL('assets/upload-file-button.svg');
 
         const container = document.querySelector('.suggestions-buttons-div');
 
@@ -175,7 +194,6 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
                 renderMessages();
             }
         }
-
 
         const userInput = document.querySelector('.text-input');
         const sendbtn = document.querySelector('.send-btn');

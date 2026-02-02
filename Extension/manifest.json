@@ -28,7 +28,9 @@
                             "content-scripts/sidebar.css",
                             "assets/sidebar-logo(2).png",
                             "assets/empty-state-logo.png",
-                            "assets/close-button-2.svg"
+                            "assets/close-button-2.svg",
+                            "assets/send-button.svg",
+                            "assets/upload-file-button.svg"
                         ],
                         
             "matches":["<all_urls>"]
