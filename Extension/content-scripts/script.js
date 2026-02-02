@@ -152,7 +152,82 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
             requestAnimationFrame(() =>{
                 updateFade(content,fadeContent);
             })
+        });
+
+        let contentMessages = [];
+
+        function render(){
+            if(contentMessages.length === 0){
+                renderEmptyState();
+            }else{
+                renderContent();
+            }
+        }
+
+
+        const userInput = document.querySelector('.text-input');
+        const sendbtn = document.querySelector('.send-btn');
+
+        sendbtn.addEventListener('click',() =>{
+            handleSend();
+        });
+
+        userInput.addEventListener('keydown',(e) =>{
+                if(e.key === 'Enter' && !e.shiftKey){
+                    e.preventDefault();
+                    handleSend();    
+                }
         })
+
+
+        const handleSend = () =>{
+            const userMessage = userInput.value.trim();
+
+            if(!userMessage) return;
+
+            renderMessage('user',userMessage);
+
+            contentMessages.push({
+                'user': userMessage
+            });
+
+
+            contentMessages.forEach(message =>{
+                console.log(message);
+            });
+
+
+            userInput.value ='';
+            userInput.focus();
+
+            addAssistantMessage();
+        }
+
+        const addAssistantMessage = () =>{
+
+            // fake ai response at the moment
+            const text = 'i am fine , how about you.'
+            contentMessages.push({
+                'assistant': text
+            });
+
+            setTimeout(() =>{
+                renderMessage('assistant',text);
+            });
+        }
+
+
+        const renderMessage = (role , userMessage) =>{
+                const message = document.createElement('div');
+
+                message.classList.add('message',role);
+
+                message.textContent = userMessage;
+
+                document.querySelector('.content-state').appendChild(message);
+        }
+
+        
 
     });
 
@@ -258,20 +333,6 @@ function updateFade(content , fadeContent){
     fadeContent.style.opacity = (canScroll && !isBottom) ? 1 : 0;
 }
 
-
-
-let contentItems = [];
-
-function render(){
-    if(contentItems.length === 0){
-        renderEmptyState();
-    }else{
-        renderContent();
-    }
-}
-
-
-
 const CAPABILITIES =  [
     {id:'selection',label:'explain selected text'},
     {id:'video-summarizer',label:'summarize video'},
@@ -339,4 +400,10 @@ function renderSuggestions(container){
 
         });
 }
+
+
+  
+
+
+
 

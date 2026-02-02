@@ -121,6 +121,7 @@
 .sidebar-content-div{
     padding-left:20px;
     padding-top:20px;
+    padding-right:10px;
     flex:1;
     overflow-y:auto;
 }
@@ -307,4 +308,31 @@
 
 .text-input::-webkit-scrollbar-thumb:hover {
     background-color: #777;
+}
+
+.message {
+    display:inline-block;
+    word-wrap: break-word;
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    margin-bottom:16px;
+}
+
+.message.user {
+    background-color: rgba(206, 206, 217, 0.07);
+    align-self: flex-end;
+}
+
+.message.assistant {
+    background-color: #1E201E;
+    align-self: flex-start;
+}
+
+.content-state{
+    display:flex;
+    flex-direction: column;
+    gap:12px;
 }
