@@ -156,11 +156,23 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
         let contentMessages = [];
 
-        function render(){
+        const scrollToBottom = () =>{
+            const scrollWrapper = document.querySelector('.sidebar-scroll-wrapper');
+
+            scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
+        }
+
+        const renderUi = () =>{
+            const emptyState = document.querySelector('.empty-state-container');
+            const contentState = document.querySelector('.content-state');
+
             if(contentMessages.length === 0){
-                renderEmptyState();
+                emptyState.style.display = 'flex';
+                contentState.style.display = 'none';
             }else{
-                renderContent();
+                emptyState.style.display = 'none';
+                contentState.style.display = 'flex';
+                renderMessages();
             }
         }
 
@@ -185,20 +197,15 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
 
             if(!userMessage) return;
 
-            renderMessage('user',userMessage);
-
             contentMessages.push({
-                'user': userMessage
+                role:'user',
+                text:userMessage
             });
-
-
-            contentMessages.forEach(message =>{
-                console.log(message);
-            });
-
 
             userInput.value ='';
             userInput.focus();
+
+            renderUi();
 
             addAssistantMessage();
         }
@@ -208,27 +215,31 @@ fetch(chrome.runtime.getURL('content-scripts/sidebar.html'))
             // fake ai response at the moment
             const text = 'i am fine , how about you.'
             contentMessages.push({
-                'assistant': text
+                role:'assistant',
+                text:'i am fine and what about you?'
             });
 
             setTimeout(() =>{
-                renderMessage('assistant',text);
-            });
-        }
+                renderUi();
+            },2000);
+        };
 
 
-        const renderMessage = (role , userMessage) =>{
-                const message = document.createElement('div');
+        const renderMessages = () =>{
+                const contentState = document.querySelector('.content-state');
+                contentState.innerHTML = '';
 
-                message.classList.add('message',role);
+                contentMessages.forEach(msg =>{
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message',msg.role);
+                    messageDiv.textContent = msg.text;
 
-                message.textContent = userMessage;
+                    contentState.appendChild(messageDiv);
+                });
 
-                document.querySelector('.content-state').appendChild(message);
-        }
-
+                scrollToBottom();
+        };
         
-
     });
 
 
@@ -400,9 +411,6 @@ function renderSuggestions(container){
 
         });
 }
-
-
-  
 
 
 
