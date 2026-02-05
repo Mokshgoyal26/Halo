@@ -16,7 +16,7 @@
 
     "content_scripts":[{
         "matches":["<all_urls>"],
-        "js":["content-scripts/script.js"],
+        "js":["content-scripts/entry.js"],
         "run_at":"document_idle"
     }],
 
@@ -24,13 +24,21 @@
         {
 
             "resources":[
-                            "content-scripts/sidebar.html",
-                            "content-scripts/sidebar.css",
+                            "ui/sidebar-ui/sidebar.html",
+                            "ui/sidebar-ui/sidebar.css",
+                            "ui/sidebar-ui/sidebar.js",
+                            "ui/floating-button-ui/floating-button.js",
+                            "ui/floating-button-ui/floating-button.css",
+                            "ui/floating-button-ui/floating-button.html",
                             "assets/sidebar-logo(2).png",
                             "assets/empty-state-logo.png",
                             "assets/close-button-2.svg",
                             "assets/send-button.svg",
-                            "assets/upload-file-button.svg"
+                            "assets/upload-file-button.svg",
+                            "assets/open-sidebar-icon2.png",
+                            "assets/hide-sidebar-icon.svg",
+                            "assets/summarize-icon2.svg",
+                            "assets/translate-icon.svg"
                         ],
                         
             "matches":["<all_urls>"]

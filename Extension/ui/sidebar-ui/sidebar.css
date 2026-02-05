@@ -15,8 +15,39 @@
     z-index: 2147483647;
     box-sizing:border-box;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    visibility:visible;
     pointer-events:auto;
 }
+
+/*.sidebar-extension-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+
+    top: 20px;
+    right: 30px;
+
+    width: 358px;
+    height: 426px;
+
+    background-color: #2B2B2B;
+    border-radius: 8px;
+    border: 2px solid #2B2B2B;
+
+    /*transform: translateX(0);
+    opacity: 1;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    visibility:visible;
+
+    pointer-events: auto;
+}*/
+
 
 .sidebar-extension-container:active,
 .sidebar-extension-container.active {
@@ -445,5 +476,13 @@
 .upload-btn:active {
     transform: scale(0.92);
 }
+
+
+.hidden {
+    visibility:hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
 
 

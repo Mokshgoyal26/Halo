@@ -1,0 +1,419 @@
+.main-container{
+    position:fixed;
+    z-index: 2147483647;
+
+    display:flex;
+    flex-direction: column;
+
+    bottom:80px;
+    left:0px;
+
+    padding: 6px 8px 6px 0;
+    align-items:center;
+
+    gap:8px;
+
+    pointer-events: auto;
+}
+
+.open-sidebar-btn{
+    position:relative;
+    width: 44px;
+    height: 36px;
+
+    box-sizing:border-box;
+
+    border-top-right-radius: 18px;
+    border-bottom-right-radius:18px;
+    border: none;
+
+    background-color:#2B2B2B;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    pointer-events: auto;
+
+    transition:
+            background-color 120ms linear,
+            transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    
+    will-change:transform;
+}
+
+.open-sidebar-btn::before {
+    content: "";
+    position: absolute;
+    inset:2px;    
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;              /* 🔑 smaller than button */
+    
+
+    background: rgba(255, 255, 255, 0.142);
+    opacity: 0;
+
+    transition:
+        opacity 120ms linear,
+        transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+}
+
+/* hover feedback */
+.open-sidebar-btn:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* press feedback */
+.open-sidebar-btn:active {
+    transform: scale(0.95);
+}
+
+.summarize-btn {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    border: none;
+    box-sizing: border-box;
+
+    background-color:#2B2B2B;
+    cursor: pointer;
+
+    transition: transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    will-change: transform;
+}
+
+/* inner background layer */
+.summarize-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;                  /* 🔑 smaller than button */
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.142);
+    opacity: 0;
+
+    transition:
+        opacity 120ms linear,
+        transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+}
+
+/* hover feedback */
+.summarize-btn:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* press feedback */
+.summarize-btn:active {
+    transform: scale(0.95);
+}
+
+
+.action-buttons{
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.Hide-btn {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    border: none;
+    box-sizing: border-box;
+
+    background-color:#2B2B2B;
+    cursor: pointer;
+
+    transition: transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    will-change: transform;
+}
+
+/* inner background layer */
+.Hide-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;                  /* 🔑 smaller than button */
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.142);
+    opacity: 0;
+
+    transition:
+        opacity 120ms linear,
+        transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+}
+
+/* hover feedback */
+.Hide-btn:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+
+.Translate-page-btn{
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    border: none;
+    box-sizing: border-box;
+
+    background-color:#2B2B2B;
+    cursor: pointer;
+
+    transition: transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    will-change: transform;
+}
+
+/* inner background layer */
+.Translate-page-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;                  /* 🔑 smaller than button */
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.142);
+    opacity: 0;
+
+    transition:
+        opacity 120ms linear,
+        transform 80ms cubic-bezier(0.2, 0, 0.38, 0.9);
+}
+
+/* hover feedback */
+.Translate-page-btn:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.open-sidebar-btn-icon {
+    width: 20px ;
+    height: 20px ;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition:
+        transform 120ms cubic-bezier(0.2, 0, 0.38, 0.9),
+        filter 120ms linear;
+    
+}
+
+.open-sidebar-btn-icon:hover{
+    transform: scale(1.12);
+}
+
+.summarize-btn-icon {
+    width: 20px ;
+    height: 20px ;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition:
+        transform 120ms cubic-bezier(0.2, 0, 0.38, 0.9),
+        filter 120ms linear;
+}
+
+.summarize-btn-icon:hover{
+    transform: scale(1.12);
+}
+
+.Hide-btn-icon{
+    width: 20px ;
+    height: 20px ;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition:
+        transform 120ms cubic-bezier(0.2, 0, 0.38, 0.9),
+        filter 120ms linear;
+
+}
+
+.Hide-btn-icon:hover{
+    transform: scale(1.12);
+}
+
+
+.Translate-page-btn-icon{
+    width: 20px ;
+    height: 20px ;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition:
+        transform 120ms cubic-bezier(0.2, 0, 0.38, 0.9),
+        filter 120ms linear;
+}
+
+.Translate-page-btn-icon:hover{
+    transform: scale(1.12);
+}
+
+
+.seondary-visible-btn{
+    position:relative;
+}
+
+
+.summarize-btn-tooltip{
+    position: absolute;
+    left: 100%;
+    top:14%;               /* place to the right of button */                 /* vertical center relative to button */
+    transform: translateY(-50%) translateX(4px); /* small offset for initial slide */
+    padding: 16px 10px;
+    border-radius: 8px;
+    background: black;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    white-space:nowrap ;
+    opacity: 0;               /* hidden initially */
+    pointer-events: none;     /* doesn’t block hover */
+    transition: opacity 120ms ease, transform 120ms cubic-bezier(0.2,0,0.38,0.9);
+    z-index: 10; 
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);             /* on top */
+}  
+
+.secondary-visible-btn:hover .summarize-btn-tooltip{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* slide into place */
+}
+
+
+.Translate-btn-wrapper{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+}
+
+.Translate-btn-tooltip{
+    position:absolute;
+    left:130%;
+    display:inline-block;
+    top:50%;
+    transform: translateY(-50%) translateX(4px);
+    padding:16px 10px;
+    border-radius:8px;
+    background-color:black;
+    font-size:14px;
+    font-weight:500;
+    white-space:nowrap;
+    opacity:0;
+    color:white;
+    pointer-events: none;     /* doesn’t block hover */
+    transition: opacity 120ms ease, transform 120ms cubic-bezier(0.2,0,0.38,0.9);
+    z-index: 10; 
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+.Translate-btn-wrapper:hover .Translate-btn-tooltip{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* slide into place */
+}
+
+
+.Hide-btn-wrapper{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+}
+
+.Hide-btn-tooltip{
+    position:absolute;
+    left:130%;
+    display:inline-block;
+    top:50%;
+    transform: translateY(-50%) translateX(4px);
+    padding:16px 10px;
+    border-radius:8px;
+    background-color:black;
+    font-size:14px;
+    font-weight:500;
+    white-space:nowrap;
+    opacity:0;
+    color:white;
+    pointer-events: none;     /* doesn’t block hover */
+    transition: opacity 120ms ease, transform 120ms cubic-bezier(0.2,0,0.38,0.9);
+    z-index: 10; 
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+.Hide-btn-wrapper:hover .Hide-btn-tooltip{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* slide into place */
+}
+
+
+.main-button{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+}
+
+.open-sidebar-btn-tooltip{
+    position:absolute;
+    left:130%;
+    display:inline-block;
+    top:50%;
+    transform: translateY(-50%) translateX(4px);
+    padding:16px 10px;
+    border-radius:8px;
+    background-color:black;
+    font-size:14px;
+    font-weight:500;
+    white-space:nowrap;
+    opacity:0;
+    color:white;
+    pointer-events: none;     /* doesn’t block hover */
+    transition: opacity 120ms ease, transform 120ms cubic-bezier(0.2,0,0.38,0.9);
+    z-index: 10; 
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+.main-button:hover .open-sidebar-btn-tooltip{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* slide into place */
+}
+
+
+.action-buttons {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    top:100%;
+}
+
+.main-container:hover .action-buttons{
+    opacity:1;
+    pointer-events:auto;
+}
+
+
+
+
+
+
+

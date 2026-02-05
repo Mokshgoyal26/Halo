@@ -85,7 +85,8 @@ chrome.runtime.sendMessage({
 });
 
 
-// now added shadow dom
+/* exported this to the entry.js file as this is part of container that lives on webpage and separate from sidebar ui
+    now added shadow dom
 
 const host  = document.createElement('div');
 host.id = 'halo-shadow-dom';
@@ -99,13 +100,17 @@ Object.assign(host.style,{
 
 document.documentElement.appendChild(host);
 
-const shadow = host.attachShadow({mode:'open'});
+const shadow = host.attachShadow({mode:'open'});*/
 
+let sidebarMounted =  false;
 
 async function mountSidebar(shadow){
+
+    if(sidebarMounted) return;
+
     const [html,css] = await Promise.all([
-        fetch(chrome.runtime.getURL('content-scripts/sidebar.html')).then(r => r.text()),
-        fetch(chrome.runtime.getURL('content-scripts/sidebar.css')).then(r => r.text())
+        fetch(chrome.runtime.getURL('ui/sidebar-ui/sidebar.html')).then(r => r.text()),
+        fetch(chrome.runtime.getURL('ui/sidebar-ui/sidebar.css')).then(r => r.text())
     ]);
 
     // html
@@ -121,15 +126,20 @@ async function mountSidebar(shadow){
     style.textContent = resolvedCss;
     shadow.appendChild(style);
 
-    initSidebarUI(shadow);
+    sidebarMounted = true;
+
+    //initSidebarUI(shadow);
 }
 
-mountSidebar(shadow);
+let sidebarE1;
 
+export async function initSidebarUI(shadow){
 
-function initSidebarUI(shadow){
+        await mountSidebar(shadow);
     
-        const sidebar = shadow.querySelector('.sidebar-extension-container');
+        sidebarE1 = shadow.querySelector('.sidebar-extension-container');
+        sidebarE1.classList.add('hidden');
+
         const header = shadow.querySelector('.sidebar-header-container');
 
         // making border-color changes active while dragging 
@@ -137,20 +147,20 @@ function initSidebarUI(shadow){
 
         header.addEventListener('mousedown', () => {
             isDragging = true;
-            sidebar.classList.add('active');
+            sidebarE1.classList.add('active');
         });
 
         document.addEventListener('mouseup', () => {
             if(!isDragging) return;
 
             isDragging = false;
-            sidebar.classList.remove('active');
+            sidebarE1.classList.remove('active');
         });
 
-        initDrag(sidebar,header);
+        initDrag(sidebarE1,header);
 
         const closeBtn = shadow.querySelector('.close-btn');
-        closeButtonFeature(sidebar, closeBtn);
+        closeButtonFeature(sidebarE1, closeBtn);
 
 
         const content = shadow.querySelector('.sidebar-content-div');
@@ -276,6 +286,19 @@ function initSidebarUI(shadow){
         };
 }
 
+    export async function showSidebar(shadow){
+        if(!sidebarE1){
+            await initSidebarUI(shadow);
+        }
+        console.log('showsidebar called : ',sidebarE1);
+        sidebarE1.classList.remove('hidden');
+    }
+
+
+    export function hideSidebar(){
+        console.log('hiddensidebar called : ',sidebarE1);
+        sidebarE1.classList.add('hidden');
+    }
 
 
     function initDrag(sidebar,header){
@@ -364,7 +387,7 @@ function initSidebarUI(shadow){
 function closeButtonFeature(sidebar,closeBtn){
 
     closeBtn.addEventListener('click', () =>{
-            sidebar.style.display = 'none';
+            sidebar.classList.add('hidden');
     })
 
 }
@@ -442,8 +465,6 @@ function renderSuggestions(container){
             }
 
             container.appendChild(btn);
-
-
         });
 }
 
