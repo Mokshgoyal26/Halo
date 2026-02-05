@@ -33,6 +33,7 @@ async function mountFloatingBtn(shadow){
     shadow.appendChild(style);
 
     loadIcons(shadow);
+    dragFloatingBtn(shadow);
 }
 
 
@@ -55,3 +56,57 @@ function loadIcons(shadow){
     translateIcon.src = chrome.runtime.getURL('assets/translate-icon.svg');
 }
 
+function dragFloatingBtn(shadow){
+    const container = shadow.querySelector('.main-container');
+
+    let startY = 0; // initial mouse position
+    let startTop = 0; // initial element position
+
+    let isDragging = false;
+    let hasMoved = false;
+    const drag_threshold = 4;
+
+    // converting float button bottom to top 
+    const rect = container.getBoundingClientRect();
+    container.style.top = `${rect.top}px`;
+    container.style.bottom = 'auto';
+
+    container.addEventListener('mousedown',(e) =>{
+        if(e.button !== 0) return;
+
+        startY = e.clientY;
+        startTop = container.getBoundingClientRect().top;
+
+        hasMoved = false;
+
+        document.body.style.userSelect = 'none';
+
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup',stopDrag);
+
+    });
+
+    const onDrag = (e) =>{
+        const deltaY = e.clientY - startY;
+
+        if(!hasMoved && Math.abs(deltaY) < drag_threshold)  return;
+
+        hasMoved = true;
+        isDragging = true;
+
+        let newTop  = startTop + deltaY;
+        const maxTop = window.innerHeight - container.offsetHeight - 8 ;
+
+        newTop = Math.max(8 , Math.min(newTop , maxTop));
+        container.style.top = `${newTop}px`;
+    }
+
+
+    const stopDrag = (e) =>{
+        isDragging = false;
+        document.body.style.userSelect = '';
+
+        document.removeEventListener('mousemove',onDrag);
+        document.removeEventListener('mouseup',stopDrag);
+    }
+}
