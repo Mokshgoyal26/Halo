@@ -59,54 +59,100 @@ function loadIcons(shadow){
 function dragFloatingBtn(shadow){
     const container = shadow.querySelector('.main-container');
 
-    let startY = 0; // initial mouse position
-    let startTop = 0; // initial element position
+    // initial mouse position 
+    let startX = 0;
+    let startY = 0; 
+
+    // initial container position
+    let startTop = 0; 
+    let startLeft = 0;
 
     let isDragging = false;
     let hasMoved = false;
     const drag_threshold = 4;
 
-    // converting float button bottom to top 
+    
     const rect = container.getBoundingClientRect();
     container.style.top = `${rect.top}px`;
-    container.style.bottom = 'auto';
+    container.style.left = `${rect.left}px`;
+    container.style.right = 'auto';
+    container.style.bottom ='auto';
 
     container.addEventListener('mousedown',(e) =>{
+
         if(e.button !== 0) return;
 
+        startX = e.clientX;
         startY = e.clientY;
-        startTop = container.getBoundingClientRect().top;
+
+        const rect = container.getBoundingClientRect();
+        startLeft = rect.left;
+        startTop = rect.top;
 
         hasMoved = false;
+        isDragging = true;
 
+        container.style.transition = 'none';
         document.body.style.userSelect = 'none';
 
-        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mousemove',onDrag);
         document.addEventListener('mouseup',stopDrag);
 
     });
 
     const onDrag = (e) =>{
+
+        container.classList.add('dragging');
+
+        const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
 
-        if(!hasMoved && Math.abs(deltaY) < drag_threshold)  return;
+        if(!hasMoved && Math.abs(deltaY) < drag_threshold  &&  Math.abs(deltaX) < drag_threshold)  return;
 
         hasMoved = true;
-        isDragging = true;
 
+        let newLeft = startLeft + deltaX;
         let newTop  = startTop + deltaY;
-        const maxTop = window.innerHeight - container.offsetHeight - 8 ;
 
+        const maxTop = window.innerHeight - container.offsetHeight - 8 ;
         newTop = Math.max(8 , Math.min(newTop , maxTop));
+
         container.style.top = `${newTop}px`;
+        container.style.left = `${newLeft}px`;
     }
 
 
     const stopDrag = (e) =>{
         isDragging = false;
+        container.classList.remove('dragging');
+
         document.body.style.userSelect = '';
 
         document.removeEventListener('mousemove',onDrag);
         document.removeEventListener('mouseup',stopDrag);
+
+        if(!hasMoved) return;
+
+        snapToEdge();
+    }
+
+    const snapToEdge = () =>{
+        const rect = container.getBoundingClientRect();
+        const midpoint = window.innerWidth/2;
+
+        container.style.transition = 'left 160ms cubic-bezier(0.2, 0, 0.38, 0.9)';
+
+        if(rect.left + rect.width / 2 < midpoint){
+            container.style.left = '0px';
+            container.classList.add('left');
+            container.classList.remove('right');
+        }else{
+            container.style.left = `${window.innerWidth - rect.width}px`;
+            container.classList.add('right');
+            container.classList.remove('left');
+        }
     }
 }
+
+
+
