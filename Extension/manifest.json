@@ -16,7 +16,9 @@
 
     "content_scripts":[{
         "matches":["<all_urls>"],
-        "js":["content-scripts/entry.js"],
+        "js":["content-scripts/entry.js",
+            "content-scripts/contextCollector.js"
+        ],
         "run_at":"document_idle"
     }],
 

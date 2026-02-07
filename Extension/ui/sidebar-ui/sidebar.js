@@ -1,107 +1,4 @@
 
-function extractYoutubeData(){
-    const title = document.querySelector('h1')?.innerText;
-    const channel = document.querySelector('ytd-channel-name')?.innerText;
-
-    return {videoTitle : title , channel};
-}
-
-//console.log(extractYoutubeExtras());
-
-/*function waitForYoutubeData(){
-            const observer = new MutationObserver(() =>{
-                const data = extractYoutubeExtras();
-                if(data.videoTitle && data.channel){
-                    console.log('youtube data: ',data);
-                    observer.disconnect();
-                }
-            
-            });
-    
-            observer.observe(document.body,{
-                childList:true,
-                subtree:true
-            });    
-}
-
-waitForYoutubeData();*/
-
-function pageInferType(){
-    if(document.querySelector('video')) return 'video';
-    if(document.querySelector('article')) return 'article';
-    if(location.hostname.includes('youtube')) return 'video';
-
-    return 'generic';
-}
-
-//const rawText = document.body.innerText;
-
-//const content = rawText.split()
-
-function collectGenericText(){
-    const rawText = document.body.innerText ||'';
-            
-    return rawText.replace(/\s+/g, ' ')
-            .trim()
-            .slice(0,3000);
-}
-
-const collectText = () =>{
-    const metadata = {
-        url:location.href,
-        hostname:location.hostname,
-        title:document.title,
-        page:pageInferType(),
-        content:collectGenericText(),
-        youtube:null
-    };
-    
-    if(metadata.hostname.includes('youtube')){
-        const observer = new MutationObserver(() =>{
-            const data = extractYoutubeData();
-
-            if(data.videoTitle && data.channel){
-                metadata.youtube = data;
-                console.log('youtube-data: ',data);
-                observer.disconnect();
-            }
-        });
-
-        observer.observe(document.body,{childList:true ,subtree:true});
-
-    }
-
-    return metadata;
-}
-            
-
-const dataCollected = collectText();
-console.log('page data : ',dataCollected);
-
-// sending our page context to the background file
-chrome.runtime.sendMessage({
-    type:'Page_Context_Ready',
-    payload:dataCollected
-});
-
-
-/* exported this to the entry.js file as this is part of container that lives on webpage and separate from sidebar ui
-    now added shadow dom
-
-const host  = document.createElement('div');
-host.id = 'halo-shadow-dom';
-
-Object.assign(host.style,{
-    position:'fixed',
-    inset : '0',
-    zIndex:'2147483647',
-    pointerEvents:'none'
-});
-
-document.documentElement.appendChild(host);
-
-const shadow = host.attachShadow({mode:'open'});*/
-
 let sidebarMounted =  false;
 
 async function mountSidebar(shadow){
@@ -113,7 +10,7 @@ async function mountSidebar(shadow){
         fetch(chrome.runtime.getURL('ui/sidebar-ui/sidebar.css')).then(r => r.text())
     ]);
 
-    // html
+    
     const template = document.createElement('template');
     template.innerHTML = html.trim();
     shadow.appendChild(template.content.cloneNode(true));
@@ -127,8 +24,6 @@ async function mountSidebar(shadow){
     shadow.appendChild(style);
 
     sidebarMounted = true;
-
-    //initSidebarUI(shadow);
 }
 
 let sidebarE1;
@@ -197,7 +92,7 @@ export async function initSidebarUI(shadow){
             renderSuggestions(container);
             requestAnimationFrame(() =>{
                 updateFade(content,fadeContent);
-            })
+            });
         });
 
         let contentMessages = [];
