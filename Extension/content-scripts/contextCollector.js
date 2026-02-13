@@ -7,9 +7,10 @@ function extractYoutubeData(){
 
 
 function pageInferType(){
+    if(location.hostname.includes('youtube')) return 'youtube';
     if(document.querySelector('video')) return 'video';
     if(document.querySelector('article')) return 'article';
-    if(location.hostname.includes('youtube')) return 'youtube';
+    
 
     return 'generic';
 }
