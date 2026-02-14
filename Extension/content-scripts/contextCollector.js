@@ -34,8 +34,6 @@ const collectData = () =>{
     };
 }
 
-
-
 function setupYoutubeListener(sendData){
     if(location.hostname.includes('youtube.com') && location.pathname ==='/watch'){
         const sendYoutubeData = () =>{
@@ -51,9 +49,31 @@ function setupYoutubeListener(sendData){
 }
 
 
-setupYoutubeListener((data) =>{
+/*const sendData = (data) =>{
     chrome.runtime.sendMessage({
         type:'Page_Context',
         payload: data
     });
+};*/
+
+
+/*const data = collectData();
+
+if(data.pageType === 'youtube'){
+    setupYoutubeListener(sendData);
+}else{
+    sendData(data);
+}*/
+
+
+console.log("content script is loaded");
+
+
+// sending pageContext to the sidebar.js to chatRequest method 
+chrome.runtime.onMessage.addListener((msg , sender , sendResponse) =>{
+    if(msg.type === 'GET_PAGE_CONTEXT'){
+        console.log("content script received get_page_context");
+        sendResponse(collectData());
+    };
 });
+

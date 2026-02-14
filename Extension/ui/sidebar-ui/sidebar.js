@@ -1,5 +1,8 @@
 
 let sidebarMounted =  false;
+let contentMessages = [];
+let shadowRootRef = null;
+
 
 async function mountSidebar(shadow){
 
@@ -31,6 +34,8 @@ let sidebarE1;
 export async function initSidebarUI(shadow){
 
         await mountSidebar(shadow);
+
+        shadowRootRef = shadow;
     
         sidebarE1 = shadow.querySelector('.sidebar-extension-container');
         sidebarE1.classList.add('hidden');
@@ -95,30 +100,36 @@ export async function initSidebarUI(shadow){
             });
         });
 
-        let contentMessages = [];
-
-        const scrollToBottom = () =>{
-            const scrollWrapper = shadow.querySelector('.sidebar-scroll-wrapper');
-
-            scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
-        }
-
-        const renderUi = () =>{
-            const emptyState = shadow.querySelector('.empty-state-container');
-            const contentState = shadow.querySelector('.content-state');
-
-            if(contentMessages.length === 0){
-                emptyState.style.display = 'flex';
-                contentState.style.display = 'none';
-            }else{
-                emptyState.style.display = 'none';
-                contentState.style.display = 'flex';
-                renderMessages();
-            }
-        }
 
         const userInput = shadow.querySelector('.text-input');
         const sendbtn = shadow.querySelector('.send-btn');
+
+        const handleSend = () =>{
+
+            const userMessage = userInput.value.trim();
+    
+            if(!userMessage) return;
+    
+            contentMessages.push({
+                role:'USER_MESSAGE',
+                text:userMessage
+            });
+    
+            userInput.value ='';
+            userInput.focus();
+    
+            renderUi();
+
+            sendChatRequest(userMessage)
+                        .then(response =>{
+                            console.log('assistant reply received : ',response);
+                            addAssistantMessage(response.payload);
+                        })
+                        .catch(err =>{
+                            console.log('Error sending chat request: ',err);
+                        });
+
+        };
 
         sendbtn.addEventListener('click',() =>{
             handleSend();
@@ -129,62 +140,115 @@ export async function initSidebarUI(shadow){
                     e.preventDefault();
                     handleSend();    
                 }
-        })
-
-
-        const handleSend = () =>{
-            const userMessage = userInput.value.trim();
-
-            if(!userMessage) return;
-
-            contentMessages.push({
-                role:'user',
-                text:userMessage
-            });
-
-            userInput.value ='';
-            userInput.focus();
-
-            renderUi();
-
-            addAssistantMessage();
-        }
-
-        const addAssistantMessage = () =>{
-
-            // fake ai response at the moment
-            const text = 'i am fine , how about you.'
-            contentMessages.push({
-                role:'assistant',
-                text:'i am fine and what about you?'
-            });
-
-            setTimeout(() =>{
-                renderUi();
-            },2000);
-        };
-
-
-        const renderMessages = () =>{
-                const contentState = shadow.querySelector('.content-state');
-                contentState.innerHTML = '';
-
-                contentMessages.forEach(msg =>{
-                    const messageDiv = document.createElement('div');
-                    messageDiv.classList.add('message',msg.role);
-                    messageDiv.textContent = msg.text;
-
-                    contentState.appendChild(messageDiv);
-                });
-
-                scrollToBottom();
-        };
+        });
+        
 }
 
-    export async function showSidebar(shadow){
-        if(!sidebarE1){
-            await initSidebarUI(shadow);
+    function sendChatRequest(userMessage){
+        return new Promise((resolve , reject) =>{
+
+            // ask collectContext content-script for pageContext
+            chrome.runtime.sendMessage({type:'GET_PAGE_CONTEXT'}, (PageContext) =>{
+                console.log("Sending GET_PAGE_CONTEXT...");
+                if(chrome.runtime.lastError){
+                    console.log("GET_PAGE_CONTEXT error:", chrome.runtime.lastError);
+                    return reject(chrome.runtime.lastError);
+                }
+
+                console.log("PageContext received:", PageContext);
+
+                // combining userMessage and pageContext as payload
+                const payload = {
+                    userMessage,
+                    PageContext
+                };
+
+                console.log("Sending CHAT_REQUEST with payload:", payload);
+
+                // sending payload to background eventually move to the backend 
+                chrome.runtime.sendMessage({
+                    type:'CHAT_REQUEST',
+                    payload
+                }, (response) =>{
+                    if(chrome.runtime.lastError){
+                        console.log("CHAT_REQUEST error:", chrome.runtime.lastError);
+                        return reject(chrome.runtime.lastError);
+                    }
+
+                    if(response.type === 'ASSISTANT_ERROR'){
+                        return reject(response.payload);
+                    }
+
+                    // response is the ack send by the backend 
+                    console.log("CHAT_REQUEST response:", response);
+                    resolve(response);
+                });
+            });
+        });
+    };
+
+    const scrollToBottom = () =>{
+        const scrollWrapper = shadowRootRef.querySelector('.sidebar-scroll-wrapper');
+
+        scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
+    }
+
+
+    const renderUi = () =>{
+        const emptyState = shadowRootRef.querySelector('.empty-state-container');
+        const contentState = shadowRootRef.querySelector('.content-state');
+
+        if(contentMessages.length === 0){
+            emptyState.style.display = 'flex';
+            contentState.style.display = 'none';
+        }else{
+            emptyState.style.display = 'none';
+            contentState.style.display = 'flex';
+            renderMessages();
         }
+    }
+
+    const addAssistantMessage = (response) =>{
+
+        /* fake ai response at the moment
+        const text = 'i am fine , how about you.'
+        contentMessages.push({
+            role:'assistant',
+            text:'i am fine and what about you?'
+        });
+
+        setTimeout(() =>{
+            renderUi();
+        },2000);*/
+
+        contentMessages.push({
+            role:'ASSISTANT_MESSAGE',
+            text: response
+        });
+
+        renderUi();
+    };
+
+
+    const renderMessages = () =>{
+            const contentState = shadowRootRef.querySelector('.content-state');
+            contentState.innerHTML = '';
+
+            contentMessages.forEach(msg =>{
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message',msg.role);
+                messageDiv.textContent = msg.text;
+
+                contentState.appendChild(messageDiv);
+            });
+
+            scrollToBottom();
+    };
+
+    export async function showSidebar(){
+        /*if(!sidebarE1){
+            await initSidebarUI(shadowRootRef);
+        }*/
         console.log('showsidebar called : ',sidebarE1);
         sidebarE1.classList.remove('hidden');
     }
@@ -356,7 +420,7 @@ function renderSuggestions(container){
             btn.textContent = label;
 
             if(cap.id === 'selection' && !context.hasSelection){
-                btn.disabled = 'true';
+                btn.disabled = true;
             }
 
             container.appendChild(btn);

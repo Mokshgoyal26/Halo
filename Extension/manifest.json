@@ -8,7 +8,9 @@
         "default_title":"Halo(v0)"
     },
 
-    "permissions":[],
+    "permissions":["tabs"],
+    
+    "host_permissions":["http://localhost:9090/*"],
 
     "background":{
         "service_worker":"service-worker/background.js"

@@ -1,7 +1,7 @@
 // Content scripts may run as "classic scripts" in some browsers/versions.
 // To avoid "Cannot use import statement outside a module", use dynamic import.
 (async () => {
-    const { initSidebarUI ,showSidebar } = await import(
+    const { initSidebarUI ,showSidebar} = await import(
         chrome.runtime.getURL('ui/sidebar-ui/sidebar.js')
     );
 
@@ -21,14 +21,13 @@
     document.documentElement.appendChild(host);
 
     const shadow = host.attachShadow({ mode: 'open' });
-    initSidebarUI(shadow); // async inside handles mounting HTML/CSS
+    await initSidebarUI(shadow) // async inside handles mounting HTML/CSS
 
     const openSidebar = await getFloatingBtn(shadow);
 
     openSidebar.addEventListener('click',() =>{
         showSidebar();
     });
-    
 })();
 
 
