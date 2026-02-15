@@ -148,19 +148,19 @@ export async function initSidebarUI(shadow){
         return new Promise((resolve , reject) =>{
 
             // ask collectContext content-script for pageContext
-            chrome.runtime.sendMessage({type:'GET_PAGE_CONTEXT'}, (PageContext) =>{
+            chrome.runtime.sendMessage({type:'GET_PAGE_CONTEXT'}, (pageData) =>{
                 console.log("Sending GET_PAGE_CONTEXT...");
                 if(chrome.runtime.lastError){
                     console.log("GET_PAGE_CONTEXT error:", chrome.runtime.lastError);
                     return reject(chrome.runtime.lastError);
                 }
 
-                console.log("PageContext received:", PageContext);
+                console.log("PageData received:", pageData);
 
                 // combining userMessage and pageContext as payload
                 const payload = {
                     userMessage,
-                    PageContext
+                    pageData
                 };
 
                 console.log("Sending CHAT_REQUEST with payload:", payload);
@@ -190,7 +190,12 @@ export async function initSidebarUI(shadow){
     const scrollToBottom = () =>{
         const scrollWrapper = shadowRootRef.querySelector('.sidebar-scroll-wrapper');
 
-        scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
+        if(scrollWrapper){
+            setTimeout(() => {
+                scrollWrapper.scrollTop = scrollWrapper.scrollHeight;
+            }, 10);
+
+        }
     }
 
 
@@ -242,7 +247,7 @@ export async function initSidebarUI(shadow){
                 contentState.appendChild(messageDiv);
             });
 
-            scrollToBottom();
+            requestAnimationFrame(scrollToBottom);
     };
 
     export async function showSidebar(){

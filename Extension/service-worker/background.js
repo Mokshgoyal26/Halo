@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const data = message.payload;
                 console.log("prompt:", data);
 
-                const res = await fetch('http://localhost:9090/api/summary', {
+                const res = await fetch('http://localhost:9090/api/chatMessage', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

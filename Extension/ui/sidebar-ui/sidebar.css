@@ -162,7 +162,7 @@
     padding-top:20px;
     padding-right:10px;
     flex:1;
-    overflow-y:auto;
+    /*overflow-y:auto;*/
 }
 
 /* chrome , edge , safari */
@@ -209,14 +209,25 @@
     z-index:5;
 }
 
-.sidebar-scroll-wrapper{
+/*.sidebar-scroll-wrapper{
     position:relative;
     display:flex;
     flex-direction: column;
     flex:1;
     overflow:hidden;
     min-height:0;
+}*/
+
+.sidebar-scroll-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;   /* 👈 enable vertical scrolling */
+    scroll-behavior: smooth; /* optional for smooth scrolling */
 }
+
 
 .empty-state-container{
     display:flex;
