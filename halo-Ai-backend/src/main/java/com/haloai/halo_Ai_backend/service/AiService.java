@@ -1,6 +1,6 @@
 package com.haloai.halo_Ai_backend.service;
 
-import com.haloai.halo_Ai_backend.AI.LocalModelProvider;
+import com.haloai.halo_Ai_backend.AI.Provider.LocalModelProvider;
 import org.springframework.stereotype.Service;
 
 @Service

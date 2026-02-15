@@ -1,4 +1,4 @@
-package com.haloai.halo_Ai_backend.AI;
+package com.haloai.halo_Ai_backend.AI.Provider;
 
 public interface AiProvider {
     /*

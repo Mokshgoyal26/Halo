@@ -1,9 +1,9 @@
-package com.haloai.halo_Ai_backend.AI;
+package com.haloai.halo_Ai_backend.AI.Provider;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public class LocalModelProvider implements AiProvider{
+public class LocalModelProvider implements AiProvider {
     public String generateResponse(String prompt){
 
         /*
