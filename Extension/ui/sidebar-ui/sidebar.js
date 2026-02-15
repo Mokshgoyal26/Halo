@@ -2,6 +2,7 @@
 let sidebarMounted =  false;
 let contentMessages = [];
 let shadowRootRef = null;
+let userInput;
 
 
 async function mountSidebar(shadow){
@@ -101,35 +102,9 @@ export async function initSidebarUI(shadow){
         });
 
 
-        const userInput = shadow.querySelector('.text-input');
+        userInput = shadow.querySelector('.text-input');
         const sendbtn = shadow.querySelector('.send-btn');
 
-        const handleSend = () =>{
-
-            const userMessage = userInput.value.trim();
-    
-            if(!userMessage) return;
-    
-            contentMessages.push({
-                role:'USER_MESSAGE',
-                text:userMessage
-            });
-    
-            userInput.value ='';
-            userInput.focus();
-    
-            renderUi();
-
-            sendChatRequest(userMessage)
-                        .then(response =>{
-                            console.log('assistant reply received : ',response);
-                            addAssistantMessage(response.payload);
-                        })
-                        .catch(err =>{
-                            console.log('Error sending chat request: ',err);
-                        });
-
-        };
 
         sendbtn.addEventListener('click',() =>{
             handleSend();
@@ -143,6 +118,34 @@ export async function initSidebarUI(shadow){
         });
         
 }
+
+
+    const handleSend = () =>{
+
+        const userMessage = userInput.value.trim();
+
+        if(!userMessage) return;
+
+        contentMessages.push({
+            role:'USER_MESSAGE',
+            text:userMessage
+        });
+
+        userInput.value ='';
+        userInput.focus();
+
+        renderUi();
+
+        sendChatRequest(userMessage)
+                    .then(response =>{
+                        console.log('assistant reply received : ',response);
+                        addAssistantMessage(response.payload);
+                    })
+                    .catch(err =>{
+                        console.log('Error sending chat request: ',err);
+                    });
+
+    };
 
     function sendChatRequest(userMessage){
         return new Promise((resolve , reject) =>{
@@ -423,6 +426,11 @@ function renderSuggestions(container){
             const btn = document.createElement('button');
             btn.className = 'suggestion-btn';
             btn.textContent = label;
+
+            btn.addEventListener('click', () =>{
+                userInput.value = label;
+                handleSend();
+            });
 
             if(cap.id === 'selection' && !context.hasSelection){
                 btn.disabled = true;
