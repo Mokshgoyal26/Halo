@@ -9,7 +9,7 @@ import java.util.List;
 public class GenericPageContext implements PageContext {
 
     private String pageType;
-    private GenericIdentity identity;
+    private GenericPageIdentity identity;
     private String readableData;
     private List<Media> media;
     private List<String> codeblock;

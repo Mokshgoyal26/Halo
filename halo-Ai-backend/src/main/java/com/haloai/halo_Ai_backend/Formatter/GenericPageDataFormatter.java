@@ -1,6 +1,6 @@
 package com.haloai.halo_Ai_backend.Formatter;
 
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericIdentity;
+import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageIdentity;
 import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageContext;
 import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.ImageData;
 import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.Media;
@@ -16,7 +16,7 @@ public class GenericPageDataFormatter implements PageDataFormatter<GenericPageCo
 
         StringBuilder sb = new StringBuilder();
 
-        GenericIdentity identity = data.getIdentity();
+        GenericPageIdentity identity = data.getIdentity();
 
         // identity section
         if(identity != null){

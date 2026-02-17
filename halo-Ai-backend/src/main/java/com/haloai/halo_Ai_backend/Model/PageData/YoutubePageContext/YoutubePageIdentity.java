@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class YoutubeIdentity {
+public class YoutubePageIdentity {
     private String videoId;
     private String title;
     private String shortDescription;

@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GenericIdentity {
+public class GenericPageIdentity {
     private String url;
     private String hostname;
-    private String  title;
+    private String title;
     private String description;
     private String siteName;
     private String ogTitle;

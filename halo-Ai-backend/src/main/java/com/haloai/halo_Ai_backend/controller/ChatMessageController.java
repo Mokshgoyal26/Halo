@@ -18,9 +18,11 @@ public class ChatMessageController {
         this.dataService = dataService;
     }
 
+
     @PostMapping("/chatMessage")
     public String aiResponse(@RequestBody ChatRequest request){
-        System.out.println("chat request from the user : " + request);
+        System.out.println("request : " + request);
+        System.out.println("pageType: "+request.getPageData().getPageType());
 
         String response =  dataService.handleRequest(request);
         log.info("response : {}",response);

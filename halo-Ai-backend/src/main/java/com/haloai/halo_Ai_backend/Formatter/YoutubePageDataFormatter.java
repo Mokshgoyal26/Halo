@@ -2,7 +2,6 @@ package com.haloai.halo_Ai_backend.Formatter;
 
 import com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext.*;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class YoutubePageDataFormatter implements PageDataFormatter<YoutubePageCo
 
         StringBuilder sb = new StringBuilder();
 
-        YoutubeIdentity identity = data.getIdentity();
+        YoutubePageIdentity identity = data.getIdentity();
 
         // video identity
         if(identity != null){

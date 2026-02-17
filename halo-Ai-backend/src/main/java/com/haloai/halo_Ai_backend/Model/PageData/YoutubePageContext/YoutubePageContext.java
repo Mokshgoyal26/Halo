@@ -9,7 +9,7 @@ import java.util.List;
 public class YoutubePageContext implements PageContext {
 
     private String pageType;
-    private YoutubeIdentity identity;
+    private YoutubePageIdentity identity;
     private PlayBackDetails playback;
     private List<ThumbnailsData> thumbnails;
     private List<CaptionsData> captions;
