@@ -1,15 +1,12 @@
 package com.haloai.halo_Ai_backend.controller;
 
 import com.haloai.halo_Ai_backend.Model.ChatRequest;
-import com.haloai.halo_Ai_backend.Model.PageData;
 import com.haloai.halo_Ai_backend.service.ChatRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController

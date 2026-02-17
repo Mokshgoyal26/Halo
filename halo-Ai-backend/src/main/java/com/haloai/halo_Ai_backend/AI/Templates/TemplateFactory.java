@@ -18,6 +18,6 @@ public class TemplateFactory {
         return template.stream()
                 .filter(t -> t.getPageType().equalsIgnoreCase(pageType))
                 .findFirst()
-                .orElseGet(GenericPageTemplate::new);
+                .orElseGet(GenericPagePromptTemplate::new);
     }
 }

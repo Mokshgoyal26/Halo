@@ -1,79 +1,135 @@
-function extractYoutubeData(){
-    const title = document.querySelector('h1')?.innerText;
-    const channel = document.querySelector('ytd-channel-name')?.innerText;
+const getMainContent = () =>{
+    const article = document.querySelector('article') ||
+                    document.querySelector('main') ||
+                    document.body;
 
-    return {videoTitle :title , channel};
+
+    return article.innerText
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .slice(0, 8000);
+
 }
 
+const extractVideoData = () =>{
+    const videoElement = document.querySelector('video');
 
-function pageInferType(){
-    if(location.hostname.includes('youtube')) return 'youtube';
-    if(document.querySelector('video')) return 'video';
-    if(document.querySelector('article')) return 'article';
-    
+    if(!videoElement) return null;
 
-    return 'generic';
-}
-
-function collectGenericText(){
-    const rawText = document.body.innerText || '';
-
-    return rawText.replace(/\s+/g, ' ')
-        .trim()
-        .slice(0,3000);
-}
-
-const collectData = () =>{
-    return{
-        hostname : location.hostname,
-        url : location.href,
-        title : document.title,
-        pageType : pageInferType(),
-        content : collectGenericText(),
-        youtube : null
+    return {
+        src : videoElement.currentSrc || videoElement.src,
+        duration : videoElement.duration || null,
+        currentTime : videoElement.currentTime || 0,
+        paused : videoElement.paused 
     };
 }
 
-function setupYoutubeListener(sendData){
-    if(location.hostname.includes('youtube.com') && location.pathname ==='/watch'){
-        const sendYoutubeData = () =>{
-            const metaData = collectData();
-            metaData.youtube = extractYoutubeData();
-            sendData(metaData);
-        };
-
-        sendYoutubeData();
-
-        window.addEventListener('yt-navigate-finish',sendYoutubeData);
-    }
+const youtubePage = () =>{
+    return location.hostname.includes('youtube.com') && 
+                    location.pathname ==="/watch";
 }
 
 
-/*const sendData = (data) =>{
-    chrome.runtime.sendMessage({
-        type:'Page_Context',
-        payload: data
-    });
-};*/
+const extractYoutubePageData = () =>{
+    if(!youtubePage()) return{};
+
+    const video = document.querySelector('video');
+    const playerData = window.ytInitialPlayerResponse;
+    const initialData = window.ytInitialData;
+
+    const videoDetails = playerData ?.videoDetails || {};
+
+    return {
+        identity:{
+            videoId : videoDetails.videoId,
+            title: videoDetails.title,
+            shortDescription: videoDetails.shortDescription,
+            keywords: videoDetails.keywords,
+            lengthSeconds: videoDetails.lengthSeconds,
+            viewCount: videoDetails.viewCount,
+            isLiveContent: videoDetails.isLiveContent,
+            author: videoDetails.author,
+            channelId: videoDetails.channelId
+        },
+
+        playBack: video ? {
+            duration: video.duration,
+            currentTime: video.currentTime,
+            paused: video.paused,
+            playbackRate: video.playbackRate,
+            volume: video.volume
+        }: null,
+
+        thumbnails: videoDetails.thumbnail?. thumbnails || [],
+
+        streamingData: playerData ?. streamingData?.formats || [],
+
+        captions: playerData?.captions || null
+
+    };
+
+};
 
 
-/*const data = collectData();
+const extractChannelData = () =>{
+    const channelName = document.querySelector('#channel-name a')?.innerText;
+    const subscriberCount = document.querySelector('#owner-sub-count')?.innerText;
 
-if(data.pageType === 'youtube'){
-    setupYoutubeListener(sendData);
-}else{
-    sendData(data);
-}*/
+    return {
+        channelName,
+        subscriberCount
+    };
+};
 
+const pageData = () =>{
+
+    if(youtubePage()){
+
+        return {
+
+            PageType:'youtube',
+            youtubeData:{
+                ...extractYoutubePageData(),
+                channel:extractChannelData
+            }
+        };
+
+    } 
+    
+    return {
+        pageType : 'generic',
+        identity: {
+            url:location.href,
+            hostname: location.hostname,
+            title: document.title,
+            description:document.querySelector('meta[name="description"]')?.content,
+            siteName: document.querySelector('meta[property="og:site_name"]')?.content,
+            ogTitle: document.querySelector('meta[property="og:title"]')?.content
+        },
+    
+        readableData : getMainContent(),
+    
+        media : extractVideoData(),
+    
+        codeBlocks : Array.from(document.querySelectorAll('pre, code'))
+                                                    .slice(0, 20)
+                                                    .map(c => c.innerText),
+    
+        images : Array.from(document.querySelectorAll('img'))
+                                                    .slice(0, 20)
+                                                    .map(img => ({
+                                                        src: img.src,
+                                                        alt: img.alt
+                                                    }))
+    };
+        
+}
 
 console.log("content script is loaded");
 
-
-// sending pageContext to the sidebar.js to chatRequest method 
-chrome.runtime.onMessage.addListener((msg , sender , sendResponse) =>{
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if(msg.type === 'GET_PAGE_CONTEXT'){
-        console.log("content script received get_page_context");
-        sendResponse(collectData());
-    };
+        setTimeout(() => sendResponse(pageData()), 0);
+        return true; 
+    }
 });
-

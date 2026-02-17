@@ -1,6 +1,6 @@
 package com.haloai.halo_Ai_backend.AI.Templates;
 
-public class GenericPageTemplate implements PromptTemplate {
+public class GenericPagePromptTemplate implements PromptTemplate {
 
     @Override
     public String getPageType(){
@@ -9,6 +9,9 @@ public class GenericPageTemplate implements PromptTemplate {
 
     @Override
     public String buildPrompt(String userMessage , String formattedPageData){
+
+        formattedPageData = formattedPageData == null ?  "" : formattedPageData;
+        userMessage = userMessage == null ? "" : userMessage;
 
         return """
                 you are analyzing general website content.
