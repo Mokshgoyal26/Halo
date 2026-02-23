@@ -140,10 +140,19 @@ export async function initSidebarUI(shadow){
 
         renderUi();
 
+        /* this is for showing loading until ai response gets*/
+        const placeholderId = Date.now();
+        contentMessages.push({
+            role:'ASSISTANT_LOADING',
+            id: placeholderId
+        });
+
+        renderUi();
+
         sendChatRequest(userMessage)
                     .then(response =>{
                         console.log('assistant reply received : ',response);
-                        addAssistantMessage(response.payload);
+                        addAssistantMessage(response.payload , placeholderId);
                     })
                     .catch(err =>{
                         console.log('Error sending chat request: ',err);
@@ -186,7 +195,6 @@ export async function initSidebarUI(shadow){
                         return reject(response.payload);
                     }
 
-                    // response is the ack send by the backend 
                     console.log("CHAT_REQUEST response:", response);
                     resolve(response);
                 });
@@ -220,24 +228,23 @@ export async function initSidebarUI(shadow){
         }
     }
 
-    const addAssistantMessage = (response) =>{
+    const addAssistantMessage = (response , placeholderId) =>{
 
-        /* fake ai response at the moment
-        const text = 'i am fine , how about you.'
-        contentMessages.push({
-            role:'assistant',
-            text:'i am fine and what about you?'
-        });
+        const index = contentMessages.findIndex(msg => msg.id === placeholderId);
 
-        setTimeout(() =>{
-            renderUi();
-        },2000);*/
+        if(index !== -1){
+            contentMessages[index] = {
+                role:'ASSISTANT_MESSAGE',
+                text: response
+            };
 
-        contentMessages.push({
-            role:'ASSISTANT_MESSAGE',
-            text: response
-        });
-
+        }else{
+            contentMessages.push({
+                role:'ASSISTANT_MESSAGE',
+                text: response
+            });
+        }
+        
         renderUi();
     };
 
@@ -249,7 +256,23 @@ export async function initSidebarUI(shadow){
             contentMessages.forEach(msg =>{
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message',msg.role);
-                messageDiv.textContent = msg.text;
+
+                if(msg.role === 'USER_MESSAGE'){
+                    messageDiv.classList.add('message',msg.role);
+                    messageDiv.textContent = msg.text;
+                }else if(msg.role === 'ASSISTANT_LOADING'){
+                    messageDiv.classList.add('message',msg.role);
+                    messageDiv.innerHTML = `
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    `;
+                }else if(msg.role === 'ASSISTANT_MESSAGE'){
+                    messageDiv.classList.add('message',msg.role);
+                    messageDiv.textContent = msg.text;
+                }
+
+                //messageDiv.textContent = msg.text;
 
                 contentState.appendChild(messageDiv);
             });
