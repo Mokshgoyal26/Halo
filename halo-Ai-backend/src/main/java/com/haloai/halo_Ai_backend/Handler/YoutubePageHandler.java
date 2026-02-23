@@ -6,6 +6,8 @@ import com.haloai.halo_Ai_backend.Model.PageData.PageContext;
 import com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext.YoutubePageContext;
 import com.haloai.halo_Ai_backend.service.AiService;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 public class YoutubePageHandler implements PageHandler{
@@ -29,7 +31,7 @@ public class YoutubePageHandler implements PageHandler{
     }
 
     @Override
-    public String handlePageType(PageContext context , String userMessage){
+    public Flux<String> handlePageType(PageContext context , String userMessage){
 
         YoutubePageContext pageData = (YoutubePageContext) context;
         String formattedPageData = formatter.buildPageFormat(pageData);

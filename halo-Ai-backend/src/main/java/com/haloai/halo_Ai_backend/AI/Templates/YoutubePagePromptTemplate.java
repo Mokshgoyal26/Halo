@@ -15,7 +15,13 @@ public class YoutubePagePromptTemplate implements PromptTemplate{
         userMessage = userMessage == null ? "" : userMessage;
 
         return """
-                You are analyzing YoutubePage Data
+                SYSTEM:
+                you are browser sidebar assistant.
+                
+                RULES:
+                1. Answer normally
+                2. Use page context only when it is relevant
+                3. Do not summarize page context until asked
                 
                 Youtube Page Content:
                 ----------------------------------------

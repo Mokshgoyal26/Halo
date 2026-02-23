@@ -1,42 +1,22 @@
 package com.haloai.halo_Ai_backend.service;
 
-import com.haloai.halo_Ai_backend.AI.Provider.LocalModelProvider;
+import com.haloai.halo_Ai_backend.AI.Provider.OllamaModelProvider;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class AiService {
 
-    private LocalModelProvider localModel;
+    private OllamaModelProvider localModel;
 
-    public AiService(LocalModelProvider localModel){
+    public AiService(OllamaModelProvider localModel){
         this.localModel = localModel;
     }
 
-    public String getResponse(String prompt){
+    public Flux<String> getResponse(String prompt){
 
-        String cleanPrompt = preprocess(prompt);
-
-        String response = localModel.generateResponse(cleanPrompt);
-
-        return postProcess(response);
+        return localModel.generateResponse(prompt);
     }
 
-
-    private String preprocess(String prompt){
-        if(prompt == null || prompt.isEmpty()){
-            return "no input provided";
-        }
-
-        return prompt.trim();
-    }
-
-    private String postProcess(String output){
-
-        /*
-               its dummy output for now but this method is useful for making response more
-               structured .
-         */
-
-        return output + "(processed by ai service)";
-    }
 }

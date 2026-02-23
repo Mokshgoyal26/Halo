@@ -41,6 +41,8 @@ export async function initSidebarUI(shadow){
         sidebarE1 = shadow.querySelector('.sidebar-extension-container');
         sidebarE1.classList.add('hidden');
 
+        blockPageShortcuts(sidebarE1);
+
         const header = shadow.querySelector('.sidebar-header-container');
 
         // making border-color changes active while dragging 
@@ -111,6 +113,8 @@ export async function initSidebarUI(shadow){
         });
 
         userInput.addEventListener('keydown',(e) =>{
+                e.stopPropagation();
+
                 if(e.key === 'Enter' && !e.shiftKey){
                     e.preventDefault();
                     handleSend();    
@@ -438,6 +442,23 @@ function renderSuggestions(container){
 
             container.appendChild(btn);
         });
+}
+
+
+const blockPageShortcuts = (root) =>{
+    const events = [
+        "keydown",
+        "keypress",
+        "keyup"
+    ];
+
+    events.forEach(type =>{
+        root.addEventListener(type, (e) =>{
+
+            e.stopPropagation();
+
+        });
+    });
 }
 
 

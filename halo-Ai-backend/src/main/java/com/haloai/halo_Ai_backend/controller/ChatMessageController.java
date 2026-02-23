@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -20,11 +22,11 @@ public class ChatMessageController {
 
 
     @PostMapping("/chatMessage")
-    public String aiResponse(@RequestBody ChatRequest request){
+    public Flux<String> aiResponse(@RequestBody ChatRequest request){
         System.out.println("request : " + request);
         System.out.println("pageType: "+request.getPageData().getPageType());
 
-        String response =  dataService.handleRequest(request);
+        Flux<String> response =  dataService.handleRequest(request);
         log.info("response : {}",response);
         System.out.println("response : "+response);
         return response;

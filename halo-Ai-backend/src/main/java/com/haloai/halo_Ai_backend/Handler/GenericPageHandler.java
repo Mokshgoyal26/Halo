@@ -7,6 +7,8 @@ import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageC
 import com.haloai.halo_Ai_backend.Model.PageData.PageContext;
 import com.haloai.halo_Ai_backend.service.AiService;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 public class GenericPageHandler implements PageHandler{
@@ -30,7 +32,7 @@ public class GenericPageHandler implements PageHandler{
     }
 
     @Override
-    public String handlePageType(PageContext context , String userMessage){
+    public Flux<String> handlePageType(PageContext context , String userMessage){
         GenericPageContext pageData = (GenericPageContext) context;
 
         String formattedPageData = formatter.buildPageFormat(pageData);
