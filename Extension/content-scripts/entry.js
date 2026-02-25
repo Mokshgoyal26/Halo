@@ -9,6 +9,10 @@
         chrome.runtime.getURL('ui/floating-button-ui/floating-button.js')
     ) ;
 
+    const {getSignUpPage} = await import(
+        chrome.runtime.getURL('ui/sign-up-page-ui/signUp.js')
+    );
+
     const host = document.createElement('div');
     host.id = 'halo-shadow-dom';
     Object.assign(host.style, {
@@ -21,13 +25,16 @@
     document.documentElement.appendChild(host);
 
     const shadow = host.attachShadow({ mode: 'open' });
-    await initSidebarUI(shadow) // async inside handles mounting HTML/CSS
+
+    await initSidebarUI(shadow); // async inside handles mounting HTML/CSS
 
     const openSidebar = await getFloatingBtn(shadow);
 
     openSidebar.addEventListener('click',() =>{
         showSidebar();
     });
+
+
 })();
 
 

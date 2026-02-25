@@ -1,3 +1,5 @@
+import { getSignUpPage  } from "../sign-up-page-ui/signUp.js";
+
 
 let sidebarMounted =  false;
 let contentMessages = [];
@@ -42,6 +44,12 @@ export async function initSidebarUI(shadow){
         sidebarE1.classList.add('hidden');
 
         blockPageShortcuts(sidebarE1);
+
+        const openSignUpPageBtn = shadow.querySelector('.open-signup-page');
+
+        openSignUpPageBtn.addEventListener('click', async () => {
+            await getSignUpPage(shadow);
+        });
 
         const header = shadow.querySelector('.sidebar-header-container');
 
@@ -483,6 +491,8 @@ const blockPageShortcuts = (root) =>{
         });
     });
 }
+
+
 
 
 

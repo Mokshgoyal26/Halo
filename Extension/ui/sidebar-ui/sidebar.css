@@ -64,6 +64,33 @@
 
 .header-right-container{
     padding-right:15px;
+    display:flex;
+    flex-direction: row;
+    gap:6px;
+}
+
+.open-signup-page{
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    background-color: #3A3A3A;
+    color:#EAEAEA;
+    border: 1px solid #444;
+
+    cursor:pointer;
+
+    transition: background-color 120ms ease, transform 80ms ease;
+}
+
+
+.open-signup-page:hover{
+    background-color: #444;
+}
+
+.open-signup-page:active{
+    transform: scale(0.97);
 }
 
 .close-btn {
