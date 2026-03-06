@@ -38,4 +38,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         return true; // keeps message port open for async response
     }
+
+    if(message.type === 'SIGN_UP_REQUEST'){
+        (async () =>{
+            try{
+                const data = message.payload;
+                console.log('signup credentials : ', data);
+
+                const res = await fetch('http://localhost:9090/auth/signup',{
+                    method:'POST',
+                    headers:{'Content-Type' : 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                
+                sendResponse({
+                    type: 'SIGN_UP_RESULT',
+                    payload: result
+                });
+            }catch(err){
+
+                sendResponse({
+                    type:'SIGN_UP_ERROR',
+                    payload:err.message
+                })
+
+            }
+        })();
+
+        return true;
+    }
 });
