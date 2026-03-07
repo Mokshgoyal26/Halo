@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class OllamaRequest {
+public class OllamaRequest{
 
     private final String model;
     private final String prompt;
