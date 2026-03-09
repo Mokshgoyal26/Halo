@@ -8,7 +8,10 @@
         "default_title":"Halo(v0)"
     },
 
-    "permissions":["tabs"],
+    "permissions":[
+        "tabs",
+        "storage"
+    ],
     
     "host_permissions":["http://localhost:9090/*"],
 

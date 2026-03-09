@@ -24,6 +24,13 @@ public class ChatRequestService {
 
         PageHandler handler = handlerRegistry.getPageHandler(context.getPageType());
 
-        return handler.handlePageType(context , request.getUserMessage());
+        return handler.handlePageType(context , request.getUserMessage())
+                .doOnSubscribe(sub -> System.out.println("Stream Started"))
+                .doOnNext(token -> System.out.println("Token: "+token))
+                .doOnError(err -> {
+                    System.out.println("Stream Error : "+ err);
+                            err.printStackTrace();
+                })
+                .doOnComplete(() -> System.out.println("Stream pipeline is complete"));
     }
 }

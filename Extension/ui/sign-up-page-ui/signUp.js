@@ -43,6 +43,7 @@ async function mountSignUpPage(shadow){
     
     closeButtonFeature(signupPageElement);
     handleSignupRequest(signupPageElement);
+    handleLoginRequest(signupPageElement);
     
 
 }
@@ -99,5 +100,45 @@ function handleSignupRequest(signupPage){
         }); 
     });
 } 
+
+
+function handleLoginRequest(signupPage){
+
+    console.log('handlelogin function is initialized ... ');
+
+    const userInput = signupPage.querySelector('#auth-email');
+    const passwordInput = signupPage.querySelector('#auth-password');
+    const loginBtn = signupPage.querySelector('.login-btn');
+
+    console.log('userInput : ',userInput);
+    console.log('passwordInput : ',passwordInput);
+    
+
+    if(!userInput || !passwordInput || !loginBtn){
+        console.warn('login inputs not found');
+        return ;
+    }
+
+    loginBtn.addEventListener('click' , async () =>{
+        console.log('login button  clicked ... ');
+        const user = userInput.value;
+        const password = passwordInput.value;
+
+        if(!user || !password){
+            console.warn('user or password is empty');
+            return;
+        }
+
+        chrome.runtime.sendMessage({
+            type: 'LOGIN_REQUEST',
+            payload:{
+                user,
+                password
+            }
+        }, (response) =>{
+            console.log('login Result : ', response);
+        }); 
+    });
+}
 
 
