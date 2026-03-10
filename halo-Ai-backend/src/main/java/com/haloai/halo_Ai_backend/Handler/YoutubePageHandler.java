@@ -2,12 +2,11 @@ package com.haloai.halo_Ai_backend.Handler;
 import com.haloai.halo_Ai_backend.AI.Templates.PromptTemplate;
 import com.haloai.halo_Ai_backend.AI.Templates.TemplateFactory;
 import com.haloai.halo_Ai_backend.Formatter.PageDataFormatter;
-import com.haloai.halo_Ai_backend.Model.PageData.PageContext;
-import com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext.YoutubePageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.PageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext.YoutubePageContext;
 import com.haloai.halo_Ai_backend.service.AiService;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Component
 public class YoutubePageHandler implements PageHandler{

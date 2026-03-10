@@ -1,10 +1,10 @@
-package com.haloai.halo_Ai_backend.Model.PageData;
+package com.haloai.halo_Ai_backend.DTO.PageData;
 
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageContext;
-import com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext.YoutubePageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.GenericPageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext.YoutubePageContext;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

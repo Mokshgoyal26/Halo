@@ -1,6 +1,6 @@
-package com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext;
+package com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext;
 
-import com.haloai.halo_Ai_backend.Model.PageData.PageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.PageContext;
 import lombok.Data;
 
 import java.util.List;

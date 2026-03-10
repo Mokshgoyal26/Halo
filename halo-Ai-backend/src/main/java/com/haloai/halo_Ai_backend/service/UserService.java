@@ -1,10 +1,9 @@
 package com.haloai.halo_Ai_backend.service;
 
-import com.haloai.halo_Ai_backend.Model.SignUpRequest;
+import com.haloai.halo_Ai_backend.DTO.SignUpRequest;
 import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.Repository.UserRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,5 +35,10 @@ public class UserService {
         user.setPassword(hashedPassword);
 
         userRepository.save(user);
+    }
+
+    public User findByUsername(String username){
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("user not found"));
     }
 }

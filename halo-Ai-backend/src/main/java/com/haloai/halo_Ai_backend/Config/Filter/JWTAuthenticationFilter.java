@@ -2,6 +2,7 @@ package com.haloai.halo_Ai_backend.Config.Filter;
 
 import com.haloai.halo_Ai_backend.service.CustomerUserDetailsService;
 import com.haloai.halo_Ai_backend.service.JWTService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +50,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authHeader.substring(7);
-        username = jwtService.extractUsername(jwtToken);
+
+        try{
+            username = jwtService.extractUsername(jwtToken);
+        }catch(ExpiredJwtException e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token expired\"}");
+
+            return;
+        }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
 

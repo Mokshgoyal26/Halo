@@ -1,4 +1,4 @@
-package com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext;
+package com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

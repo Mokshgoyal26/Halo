@@ -1,4 +1,4 @@
-package com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext;
+package com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StreamingFormat {
+public class ThumbnailsData {
+
     private String url;
-    private String mimeType;
+    private int width;
+    private int height;
 }

@@ -1,8 +1,8 @@
 package com.haloai.halo_Ai_backend.service;
 import com.haloai.halo_Ai_backend.Handler.PageHandler;
 import com.haloai.halo_Ai_backend.Handler.PageHandlerRegistry;
-import com.haloai.halo_Ai_backend.Model.ChatRequest;
-import com.haloai.halo_Ai_backend.Model.PageData.PageContext;
+import com.haloai.halo_Ai_backend.DTO.ChatRequest;
+import com.haloai.halo_Ai_backend.DTO.PageData.PageContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 

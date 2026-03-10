@@ -1,9 +1,9 @@
 package com.haloai.halo_Ai_backend.Formatter;
 
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageIdentity;
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.GenericPageContext;
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.ImageData;
-import com.haloai.halo_Ai_backend.Model.PageData.GenericPageContext.Media;
+import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.GenericPageIdentity;
+import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.GenericPageContext;
+import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.ImageData;
+import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.Media;
 import org.springframework.stereotype.Component;
 import java.util.List;
 

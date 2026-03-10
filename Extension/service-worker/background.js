@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.sendMessage(sender.tab.id, { type: 'GET_PAGE_CONTEXT' }, (tabResponse) =>{
             sendResponse(tabResponse);            
         });
-        return true;  // important! keeps the port open for async response
+        return true;  
     }
 
     if(message.type === 'CHAT_REQUEST'){
@@ -15,9 +15,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const data = message.payload;
                 console.log("prompt:", data);
 
-                const {jwtToken} = await chrome.storage.local.get("jwtToken");
+                let {jwtToken} = await chrome.storage.local.get("jwtToken");
 
-                const res = await fetch('http://localhost:9090/api/chatMessage', {
+                let res = await fetch('http://localhost:9090/api/chatMessage', {
                     method: 'POST',
                     headers: { 
                         
@@ -26,6 +26,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     },
                     body: JSON.stringify(data)
                 });
+
+
+                if(res.status === 401){
+                    console.log("Access Token is expired , refreshing....");
+
+                    jwtToken = await refreshAccessTokenFunction();
+
+                    res = await fetch('http://localhost:9090/api/chatMessage', {
+                        method: 'POST',
+                        headers: { 
+                            
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${jwtToken}` 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                }
 
                 const assistantReply = await res.text();
                 console.log("assistant reply:", assistantReply);
@@ -44,7 +61,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
         })();
 
-        return true; // keeps message port open for async response
+        return true; 
     }
 
     if(message.type === 'SIGN_UP_REQUEST'){
@@ -53,7 +70,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const data = message.payload;
                 console.log('signup credentials : ', data);
 
-                const res = await fetch('http://localhost:9090/auth/signup',{
+                let res = await fetch('http://localhost:9090/auth/signup',{
                     method:'POST',
                     headers:{'Content-Type' : 'application/json'},
                     body: JSON.stringify(data)
@@ -86,7 +103,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const data = message.payload;
                 console.log("login_credentials: ", data);
 
-                const res = await fetch('http://localhost:9090/auth/login', {
+                let res = await fetch('http://localhost:9090/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -95,8 +112,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const login_reply = await res.json();
                 console.log("login reply: ", login_reply);
 
-                if(login_reply.token){
-                    chrome.storage.local.set({jwtToken : login_reply.token} , () =>{
+
+                if(login_reply.accessToken && login_reply.refreshToken){
+                    chrome.storage.local.set({
+                        jwtToken : login_reply.accessToken,
+                        refreshToken : login_reply.refreshToken
+                    } , () =>{
                         console.log('toke is saved to chrome storage');
                     });
                 }
@@ -120,3 +141,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     
 });
+
+
+async function refreshAccessTokenFunction(){
+
+    const {refreshToken} = await chrome.storage.local.get("refreshToken");
+
+    if(!refreshToken){
+        throw new Error("No refresh token available");
+    }
+
+    let res = await fetch("http://localhost:9090/auth/refresh",{
+        
+        method : "POST",
+        headers : {
+            "Content-Type":"application/json" 
+        },
+
+        body:JSON.stringify({refreshToken : refreshToken})
+    });
+
+    if(!res.ok){
+        throw new Error("Refresh token got expired , please login again.");
+    }
+
+    const data = await res.json();
+
+    await chrome.storage.local.set({
+        jwtToken : data.accessToken
+    });
+
+    console.log("new access token is stored");
+
+    return data.accessToken;
+
+}

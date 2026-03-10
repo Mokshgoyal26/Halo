@@ -1,6 +1,6 @@
 package com.haloai.halo_Ai_backend.Formatter;
 
-import com.haloai.halo_Ai_backend.Model.PageData.YoutubePageContext.*;
+import com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
