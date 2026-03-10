@@ -1,27 +1,51 @@
-<div class="signup-page">
+<div class="auth-page">
+
     <div class="auth-main-container">
-        <div class="signup-name-logo">
-            <div class="signup-logo"></div>
-            <h2 class="signup-name">Halo AI</h2>
+
+        <div class="auth-name-logo">
+            <div class="halo-logo"></div>
+            <h2>Halo AI</h2>
         </div>
 
-        <button class="signup-close-btn">X</button>
+        <button class="auth-close-btn">X</button>
 
-        <div class="auth-sign-in">
-            <div class="auth-email-password">
-                <h3>Enter your Email and Password</h3>
-                <input id="auth-email" type="email" placeholder="email">
-                <input id="auth-password" type="password" placeholder="password">
-            </div>
-            <div class="auth-submition">
-                <button class="auth-submit-btn">Sign Up</button>
-            </div>
+        <!-- LOGIN FORM-->
 
-            <div class="login">
-                <p>Already have an Account</p>
-                <button class="login-btn">Login</button>
-            </div>
+        <div class="login-form">
+
+            <h3>Login to your Account</h3>
+
+            <input id="login-username" type="username" placeholder="Username">
+            <input id="login-password" type="password" placeholder="Password">
+
+            <button class="login-submit-btn">Login</button>
+
+            <p>
+                New user?
+                <button class="show-signup-page-btn">Create Account</button>
+            </p>
+
         </div>
+
+        <!-- SIGNUP FORM -->
+        
+        <div class="signup-form" style="display:none">
+
+            <h3>Create your Account</h3>
+
+            <input id="signup-username" type="text" placeholder="Full name">
+            <input id="signup-email" type="email" placeholder = "Email">
+            <input id="signup-password" type="password" placeholder="password">
+
+            <button class="signup-submit-btn">Sign Up</button>
+
+            <p>
+                Already have an Account?
+                <button class="show-login-page-btn">Login</button>
+            </p>
+
+        </div>
+
+
     </div>
-    <div class="auth-footer"></div>
 </div>
