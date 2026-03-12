@@ -36,6 +36,7 @@ let sidebarE1;
 
 export async function initSidebarUI(shadow){
 
+        console.log('initSIdebarUi is called.....')
         await mountSidebar(shadow);
 
         shadowRootRef = shadow;
@@ -128,6 +129,9 @@ export async function initSidebarUI(shadow){
                     handleSend();    
                 }
         });
+
+
+        await MountUsernameOnEmptyStateTitle(shadow);
         
 }
 
@@ -277,7 +281,7 @@ export async function initSidebarUI(shadow){
                     `;
                 }else if(msg.role === 'ASSISTANT_MESSAGE'){
                     messageDiv.classList.add('message',msg.role);
-                    messageDiv.textContent = msg.text;
+                    messageDiv.innerHTML = parseMarkdown(msg.text);
                 }
 
                 //messageDiv.textContent = msg.text;
@@ -493,7 +497,60 @@ const blockPageShortcuts = (root) =>{
 }
 
 
+function parseMarkdown(text) {
+    return text
+        // code blocks
+        .replace(/```[\w]*\n?([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        // inline code
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // bold
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // italic
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // headings
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        // unordered lists
+        .replace(/^\s*[-*] (.+)/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        // ordered lists
+        .replace(/^\d+\. (.+)/gm, '<li>$1</li>')
+        // line breaks
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        // wrap in paragraph
+        .replace(/^(?!<[a-z])/gm, '')
+}
 
+
+async function MountUsernameOnEmptyStateTitle(shadow){
+
+    console.log('mount username called....');
+
+    const result = await chrome.storage.local.get('username');
+    console.log('chrome storage result : ',result);
+    console.log('username : ',result.username);
+
+    const titleElement = shadow.querySelector('.empty-state-title');
+
+        if(titleElement && result.username){
+
+            titleElement.textContent = `Hi ${result.username} 👋`;
+        }
+
+    window.addEventListener('halo:login' ,(e) =>{
+
+        const titleElement = shadow.querySelector('.empty-state-title'); 
+
+        if(titleElement && e.detail.username){
+            titleElement.textContent = `Hi ${e.detail.username} 👋`;
+        }
+
+    });
+
+
+}
 
 
 

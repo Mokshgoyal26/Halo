@@ -46,6 +46,7 @@
                             "ui/sidebar-ui/sidebar/SuggestionsManager.js",
                             "ui/sidebar-ui/sidebar/UiEffects.js",
                             "ui/sidebar-ui/sidebar/MountSidebar.js",
+                            "ui/marked.min.js",
                             "assets/sidebar-logo(2).png",
                             "assets/empty-state-logo.png",
                             "assets/close-button-2.svg",

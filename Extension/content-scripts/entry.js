@@ -1,6 +1,16 @@
 // Content scripts may run as "classic scripts" in some browsers/versions.
 // To avoid "Cannot use import statement outside a module", use dynamic import.
 (async () => {
+
+    // load marked as a classic script so it attaches to window.marked globally
+    await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = chrome.runtime.getURL('ui/marked.min.js');
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+
     const { initSidebarUI ,showSidebar} = await import(
         chrome.runtime.getURL('ui/sidebar-ui/sidebar.js')
     );

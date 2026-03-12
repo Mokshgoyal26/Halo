@@ -137,11 +137,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
                 if(login_reply.accessToken && login_reply.refreshToken){
+
                     chrome.storage.local.set({
+
                         jwtToken : login_reply.accessToken,
-                        refreshToken : login_reply.refreshToken
+                        refreshToken : login_reply.refreshToken,
+                        username : login_reply.username
+
                     } , () =>{
                         console.log('token is saved to chrome storage');
+                            chrome.storage.local.get(null, (all) => {
+                                console.log('everything in storage:', all);
+                            });
                     });
                 }
 

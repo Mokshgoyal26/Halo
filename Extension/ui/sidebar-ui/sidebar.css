@@ -17,11 +17,18 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     visibility:visible;
     pointer-events:auto;
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.04);
 }
+
 
 .sidebar-extension-container.active {
     border-color: #2979ff;
-    box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 0 2px rgba(41, 121, 255, 0.2);
 }
 
 .sidebar-header-container{
@@ -37,6 +44,7 @@
     user-select:none;
     position:relative;
 }
+
 
 
 
@@ -409,7 +417,7 @@
 }
 
 .message {
-    display:inline-block;
+    display:block;
     word-wrap: break-word;
     max-width: 80%;
     padding: 10px 12px;
@@ -421,13 +429,91 @@
 
 .message.USER_MESSAGE {
     background-color: rgba(206, 206, 217, 0.07);
-    align-self: flex-end;
+    /*align-self: flex-end;*/
+    margin-left:auto;
 }
 
-.message.ASSISTANT_MESSAGE{
-    /*background-color: #444444;*/
+/*.message.ASSISTANT_MESSAGE{
+    /*background-color: #444444;
     align-self: flex-start;
+}*/
+
+.message.ASSISTANT_MESSAGE {
+    /*align-self: flex-start;*/
+    max-width: 92%;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.88);
+    margin-right:auto;
 }
+
+.message.ASSISTANT_MESSAGE p {
+    margin: 0 0 10px;
+}
+.message.ASSISTANT_MESSAGE p:last-child {
+    margin-bottom: 0;
+}
+
+.message.ASSISTANT_MESSAGE h1,
+.message.ASSISTANT_MESSAGE h2,
+.message.ASSISTANT_MESSAGE h3 {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    margin: 12px 0 6px;
+}
+
+.message.ASSISTANT_MESSAGE ul,
+.message.ASSISTANT_MESSAGE ol {
+    margin: 6px 0 10px;
+    padding-left: 18px;
+}
+.message.ASSISTANT_MESSAGE li {
+    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.message.ASSISTANT_MESSAGE code {
+    background: rgba(41, 121, 255, 0.12);
+    border: 1px solid rgba(41, 121, 255, 0.2);
+    color: #6aabff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.message.ASSISTANT_MESSAGE pre {
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+.message.ASSISTANT_MESSAGE pre code {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.message.ASSISTANT_MESSAGE blockquote {
+    border-left: 3px solid #2979ff;
+    margin: 8px 0;
+    padding: 4px 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.message.ASSISTANT_MESSAGE hr {
+    border: none;
+    border-top: 1px solid #2a2a2a;
+    margin: 10px 0;
+}
+
 
 .content-state{
     display:flex;

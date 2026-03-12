@@ -72,6 +72,6 @@ public class SignUpController {
         String accessToken = jwtService.generateToken(request.getUser());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-        return ResponseEntity.ok(new AuthResponse(accessToken , refreshToken.getToken()));
+        return ResponseEntity.ok(new AuthResponse(accessToken , refreshToken.getToken() , user.getUsername()));
     }
 }
