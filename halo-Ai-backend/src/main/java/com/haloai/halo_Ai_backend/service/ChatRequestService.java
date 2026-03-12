@@ -27,10 +27,10 @@ public class ChatRequestService {
         return handler.handlePageType(context , request.getUserMessage())
                 .doOnSubscribe(sub -> System.out.println("Stream Started"))
                 .doOnNext(token -> System.out.println("Token: "+token))
-                .doOnError(err -> {
+                .doOnComplete(() -> System.out.println("Stream pipeline is complete"))
+                .onErrorResume(err ->{
                     System.out.println("Stream Error : "+ err);
-                            err.printStackTrace();
-                })
-                .doOnComplete(() -> System.out.println("Stream pipeline is complete"));
+                    return Flux.just("Oops! Something went wrong. Please try again.");
+                });
     }
 }

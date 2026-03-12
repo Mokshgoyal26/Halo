@@ -73,6 +73,8 @@ function handleSignupRequest(signupPage){
     const passwordInput = signupPage.querySelector('#signup-password');
     const signUpBtn = signupPage.querySelector('.signup-submit-btn');
 
+    const signupErrorDiv = signupPage.querySelector('#signup-error');
+
     console.log('username : ',usernameInput);
     console.log('email : ',emailInput);
     console.log('password : ',passwordInput);
@@ -86,10 +88,10 @@ function handleSignupRequest(signupPage){
     signUpBtn.addEventListener('click' , async () =>{
         console.log('signupBtn clicked ... ');
         const user = usernameInput.value;
-        const mail = emailInput.value; 
+        const email = emailInput.value; 
         const password = passwordInput.value;
 
-        if(!user || !password || !mail){
+        if(!user || !password || !email){
             console.warn('user or password or mail is empty');
             return;
         }
@@ -98,11 +100,11 @@ function handleSignupRequest(signupPage){
             type: 'SIGN_UP_REQUEST',
             payload:{
                 user,
-                mail,
+                email,
                 password
             }
         }, (response) =>{
-            console.log('Signup Result : ', response);
+            handleAuthMessageOnUi(response,signupErrorDiv);
         }); 
     });
 } 
@@ -115,6 +117,9 @@ function handleLoginRequest(signupPage){
     const usernameInput = signupPage.querySelector('#login-username');
     const passwordInput = signupPage.querySelector('#login-password');
     const loginBtn = signupPage.querySelector('.login-submit-btn');
+
+
+    const loginErrorDiv = signupPage.querySelector('#login-error'); 
 
     console.log('userInput : ',usernameInput);
     console.log('passwordInput : ',passwordInput);
@@ -142,7 +147,8 @@ function handleLoginRequest(signupPage){
                 password
             }
         }, (response) =>{
-            console.log('login Result : ', response);
+            
+            handleAuthMessageOnUi(response, loginErrorDiv);
         }); 
     });
 }
@@ -231,6 +237,48 @@ function handleAuthPageDrag(signupPage){
         isDragging = false;
         header.style.cursor = 'grab';
     });
+}
+
+
+function handleAuthMessageOnUi(response , authMessageDiv){
+
+    if(!authMessageDiv) return;
+
+    let isError = response.type.includes('ERROR');
+    let isSuccess = response.type.includes('RESULT');
+
+    let message = '';
+
+    if(isError){
+
+        const payload = response.payload;
+
+        if(payload && payload.validationErrors){
+            message = Object.values(payload.validationErrors).join(', ');
+
+        }else if(payload && payload.message){
+            message = payload.message;
+
+        }else{
+            message = payload || 'unknown error occurred';
+        }
+
+        authMessageDiv.textContent = message;
+
+        authMessageDiv.classList.remove('hidden','success');
+        authMessageDiv.classList.add('error');
+
+    }else if(isSuccess){
+
+        authMessageDiv.textContent = response.payload || 'success!';
+
+        authMessageDiv.classList.remove('hidden','error');
+        authMessageDiv.classList.add('success');
+    }
+
+    setTimeout(() =>{
+        authMessageDiv.classList.add('hidden');
+    }, 5000);
 }
 
 

@@ -53,10 +53,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
 
             } catch(err) {
+
                 console.error("Fetch or backend error:", err);
+
                 sendResponse({
                     type: 'ASSISTANT_ERROR',
-                    payload: err.message
+                    payload: "Network Error or Backend Error : " + err.message
                 });
             }
         })();
@@ -77,19 +79,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
 
                 const result = await res.json();
+
+                if(!res.ok){
+                    sendResponse({
+                        type:'SIGN_UP_ERROR',
+                        payload:result
+                    });
+
+                    return;
+                }
                 
                 sendResponse({
                     type: 'SIGN_UP_RESULT',
                     payload: result
                 });
+
+
             }catch(err){
 
                 sendResponse({
                     type:'SIGN_UP_ERROR',
-                    payload:err.message
-                })
+                    payload:"Network Error : " + err.message
+                });
 
             }
+
         })();
 
         return true;
@@ -112,13 +126,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 const login_reply = await res.json();
                 console.log("login reply: ", login_reply);
 
+                if(!res.ok){
+                    sendResponse({
+                        type: 'LOGIN_ERROR',
+                        payload: login_reply
+                    });
+
+                    return;
+                }
+
 
                 if(login_reply.accessToken && login_reply.refreshToken){
                     chrome.storage.local.set({
                         jwtToken : login_reply.accessToken,
                         refreshToken : login_reply.refreshToken
                     } , () =>{
-                        console.log('toke is saved to chrome storage');
+                        console.log('token is saved to chrome storage');
                     });
                 }
 
@@ -128,10 +151,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
 
             } catch(err) {
-                console.error("Fetch or backend error:", err);
+
                 sendResponse({
                     type: 'LOGIN_ERROR',
-                    payload: err.message
+                    payload: "Network Error: "+ err.message
                 });
             }
         })();
@@ -161,11 +184,13 @@ async function refreshAccessTokenFunction(){
         body:JSON.stringify({refreshToken : refreshToken})
     });
 
-    if(!res.ok){
-        throw new Error("Refresh token got expired , please login again.");
-    }
+    
 
     const data = await res.json();
+
+    if(!res.ok){
+        throw new Error(data.message || "Refresh Token Expired , please login again");
+    }
 
     await chrome.storage.local.set({
         jwtToken : data.accessToken

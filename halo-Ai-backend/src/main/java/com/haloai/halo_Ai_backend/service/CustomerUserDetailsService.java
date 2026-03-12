@@ -4,7 +4,6 @@ import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.Repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,7 +21,8 @@ public class CustomerUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username){
         Optional<User> user = userRepository.findUserByUsername(username);
 
-        User u = user.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        User u = user.orElseThrow(() -> new com.haloai.halo_Ai_backend.Exceptions.UsernameNotFoundException(
+                "user "+ username + " not found"));
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(u.getUsername())

@@ -1,5 +1,7 @@
 package com.haloai.halo_Ai_backend.service;
 
+import com.haloai.halo_Ai_backend.Exceptions.RefreshTokenExpiredException;
+import com.haloai.halo_Ai_backend.Exceptions.UserNotFoundException;
 import com.haloai.halo_Ai_backend.Model.RefreshToken;
 import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.Repository.RefreshTokenRepository;
@@ -24,7 +26,8 @@ public class RefreshTokenService {
 
     public RefreshToken createRefreshToken(Long id){
 
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException("user by id : "+ id + " not found"));
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
@@ -41,7 +44,7 @@ public class RefreshTokenService {
         if(refreshToken.getExpiryDate().compareTo(Instant.now()) < 0){
             refreshTokenRepository.delete(refreshToken);
 
-            throw new RuntimeException("Refresh token is expired");
+            throw new RefreshTokenExpiredException("Refresh Token is Expired");
         }
 
         return refreshToken;

@@ -1,12 +1,12 @@
 package com.haloai.halo_Ai_backend.service;
 
 import com.haloai.halo_Ai_backend.DTO.SignUpRequest;
+import com.haloai.halo_Ai_backend.Exceptions.UsernameAlreadyExistsException;
+import com.haloai.halo_Ai_backend.Exceptions.UsernameNotFoundException;
 import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.Repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -25,8 +25,10 @@ public class UserService {
         String rawPassword = request.getPassword();
 
         if(userRepository.existsByUsername(username)){
-            throw new ResponseStatusException(HttpStatus.CONFLICT , "User already exists");
+            throw new UsernameAlreadyExistsException("user "+ username +" already exists");
         }
+
+
 
         String hashedPassword = passwordEncoder.encode(rawPassword);
 
@@ -39,6 +41,6 @@ public class UserService {
 
     public User findByUsername(String username){
         return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("user "+ username + " not found"));
     }
 }

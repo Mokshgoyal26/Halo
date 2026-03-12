@@ -8,6 +8,7 @@ import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.service.JWTService;
 import com.haloai.halo_Ai_backend.service.RefreshTokenService;
 import com.haloai.halo_Ai_backend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,7 +42,7 @@ public class SignUpController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> register(@RequestBody SignUpRequest request){
+    public ResponseEntity<?> register(@Valid @RequestBody SignUpRequest request){
         System.out.println("user credentials : "+ request);
            userService.signUpUser(request);
 
@@ -52,7 +53,7 @@ public class SignUpController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request){
 
         System.out.println("login request : "+request);
 

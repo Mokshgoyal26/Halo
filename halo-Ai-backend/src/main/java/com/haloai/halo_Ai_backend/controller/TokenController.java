@@ -1,7 +1,7 @@
 package com.haloai.halo_Ai_backend.controller;
 
+import com.haloai.halo_Ai_backend.Exceptions.RefreshTokenNotFoundException;
 import com.haloai.halo_Ai_backend.Model.RefreshToken;
-import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.Repository.RefreshTokenRepository;
 import com.haloai.halo_Ai_backend.service.JWTService;
 import com.haloai.halo_Ai_backend.service.RefreshTokenService;
@@ -39,7 +39,7 @@ public class TokenController {
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(requestToken)
                 .map(refreshTokenService::verifyExpiration)
-                .orElseThrow(() ->  new RuntimeException("Refresh Token not found"));
+                .orElseThrow(() ->  new RefreshTokenNotFoundException("Refresh Token not found"));
 
         String username = refreshToken.getUser().getUsername();
 
