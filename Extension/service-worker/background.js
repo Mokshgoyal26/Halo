@@ -44,13 +44,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     });
                 }
 
-                const assistantReply = await res.text();
+                console.log("sender : ",sender);
+                console.log("senderTab : ",sender.tab);
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+
+                while(true){
+                    const {done , value} = await reader.read();
+
+                    if(done){
+                        chrome.tabs.sendMessage(sender.tab.id,{
+                            type:'ASSISTANT_STREAM_END'
+                        });
+
+                        break;
+                    }
+
+                    const chunk = decoder.decode(value , {stream:true});
+
+                    chrome.tabs.sendMessage(sender.tab.id ,{
+                        type:'ASSISTANT_STREAM_CHUNK',
+                        payload : chunk
+                    });
+                }
+
+                /*const assistantReply = await res.text();
                 console.log("assistant reply:", assistantReply);
 
                 sendResponse({
                     type: 'ASSISTANT_REPLY',
                     payload: assistantReply
-                });
+                });*/
 
             } catch(err) {
 
@@ -167,6 +192,100 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         })();
 
         return true; 
+    }
+
+
+    if(message.type === 'GET_CONVERSATIONS'){
+        (async() =>{
+            try{
+
+                let {jwtToken} = await chrome.storage.local.get('jwtToken');
+                
+                let res = await fetch('http://localhost:9090/api/conversations',{
+
+                                method:'GET',
+                                headers: {'Authorization': `Bearer ${jwtToken}`},
+                            });
+                
+                if(res.status === 401){
+
+                    console.log('jwt access token expired , refreshing token....');
+                    jwtToken = await refreshAccessTokenFunction();
+                    
+                    res = await fetch('http://localhost:9090/api/conversations',{
+
+                                    method:'GET',
+                                    headers: {'Authorization': `Bearer ${jwtToken}`},
+                                });
+                    
+                }
+
+                const data = await res.json();
+                console.log('conversations : ',data);
+
+                sendResponse({
+                    type:'CONVERSATIONS_SUCCESS',
+                    payload:data
+                });
+
+            }catch(error){
+
+                sendResponse({
+                    type:'CONVERSATIONS_ERROR',
+                    payload: error.message
+                });
+            }
+
+        })();
+
+        return true;
+    }
+
+    
+    if(message.type === 'GET_CONVERSATION_MESSAGES'){
+
+        (async() =>{
+
+            try{
+
+                let {jwtToken} = await chrome.storage.local.get('jwtToken');
+                const conversationId = message.payload;
+
+                let res = await fetch(`http://localhost:9090/api/conversations/${conversationId}/messages`,{
+
+                    method:'GET',
+                    headers: {'Authorization':`Bearer ${jwtToken}`}
+                });
+
+
+                if(res.status === 401){
+
+                    jwtToken = await refreshAccessTokenFunction();
+                    console.log('access token expired , refreshing accessToken....');
+
+                    res = await fetch(`http://localhost:9090/api/${conversationId}/messages`,{
+                            method:'GET',
+                            headers: {'Authorization':`Bearer ${jwtToken}`}
+                        });
+                }
+
+                const data = await res.json();
+
+                sendResponse({
+                    type:'MESSAGES_SUCCESS',
+                    payload:data
+                });
+            }catch(err){
+
+                sendResponse({
+                    type:'MESSAGES_ERROR',
+                    payload: err.message
+                });
+            }
+
+        })();
+
+        return true;
     }
 
     

@@ -31,6 +31,9 @@
         {
 
             "resources":[
+                            "ui/sidebar-ui/dropdown-menu-ui/dropdown-menu.js",
+                            "ui/sidebar-ui/dropdown-menu-ui/dropdown-menu.css",
+                            "ui/sidebar-ui/dropdown-menu-ui/dropdown-menu.html",
                             "ui/sign-up-page-ui/signUp.css",
                             "ui/sign-up-page-ui/signUp.html",
                             "ui/sign-up-page-ui/signUp.js",

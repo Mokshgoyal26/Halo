@@ -1,10 +1,12 @@
 import { getSignUpPage  } from "../sign-up-page-ui/signUp.js";
+import { mountDropdownMenuPage , initDropdownMenuEvents } from "./dropdown-menu-ui/dropdown-menu.js";
 
 
 let sidebarMounted =  false;
 let contentMessages = [];
 let shadowRootRef = null;
 let userInput;
+let conversationId = null;
 
 
 async function mountSidebar(shadow){
@@ -22,7 +24,7 @@ async function mountSidebar(shadow){
     shadow.appendChild(template.content.cloneNode(true));
 
 
-    // css - resolve relative asset URLs for shadow DOM (inlined CSS resolves relative to page, not extension)
+    
     const baseUrl = chrome.runtime.getURL('assets/');
     const resolvedCss = css.replace(/\.\.\/assets\//g, baseUrl);
     const style = document.createElement('style');
@@ -48,13 +50,16 @@ export async function initSidebarUI(shadow){
 
         const openSignUpPageBtn = shadow.querySelector('.open-signup-page');
 
-        openSignUpPageBtn.addEventListener('click', async () => {
-            await getSignUpPage(shadow);
+        openSignUpPageBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+    
+            // If click came from inside the auth page, ignore it
+            if(e.target.closest('.auth-page')) return;
+            await getSignUpPage(sidebarE1);
         });
 
         const header = shadow.querySelector('.sidebar-header-container');
 
-        // making border-color changes active while dragging 
         let isDragging = false;
 
         header.addEventListener('mousedown', () => {
@@ -89,15 +94,15 @@ export async function initSidebarUI(shadow){
         });
 
 
-        // injecting close-btn src
+        
         const closeIcon = shadow.querySelector('.close-btn-icon');
         closeIcon.src = chrome.runtime.getURL("assets/close-button-2.svg");
 
-        // injecting send-btn src 
+        
         const sendIcon = shadow.querySelector('.send-btn-icon');
         sendIcon.src = chrome.runtime.getURL('assets/send-button.svg');
 
-        // injecting upload-btn-src
+        
         const uploadIcon = shadow.querySelector('.upload-btn-icon');
         uploadIcon.src = chrome.runtime.getURL('assets/upload-file-button.svg');
 
@@ -116,7 +121,6 @@ export async function initSidebarUI(shadow){
         userInput = shadow.querySelector('.text-input');
         const sendbtn = shadow.querySelector('.send-btn');
 
-
         sendbtn.addEventListener('click',() =>{
             handleSend();
         });
@@ -131,16 +135,48 @@ export async function initSidebarUI(shadow){
         });
 
 
+        chrome.runtime.onMessage.addListener((message) =>{
+
+            if(message.type === 'ASSISTANT_STREAM_CHUNK'){
+                appendChunkToUi(message.payload);
+
+            }else if(message.type === 'ASSISTANT_STREAM_END'){
+                finalizeAiResponseStream();
+            }
+        });
+
         await MountUsernameOnEmptyStateTitle(shadow);
+
+        
+        const triggerBtn = shadow.querySelector('.dropdown-trigger');
+        await mountDropdownMenuPage(triggerBtn);
+
+
+        const result = await chrome.storage.local.get('conversationId');
+        if(result.conversationId){
+            conversationId = result.conversationId;
+        }
+
+        initDropdownMenuEvents(triggerBtn , (convo) =>{
+            loadConversationIntoSidebar(convo);
+        });
+
+
+        handleNewChat();
         
 }
 
 
-    const handleSend = () =>{
+    const handleSend = async () =>{
 
         const userMessage = userInput.value.trim();
 
         if(!userMessage) return;
+
+        if(!conversationId){
+            conversationId = crypto.randomUUID();
+            await chrome.storage.local.set({conversationId});
+        }
 
         contentMessages.push({
             role:'USER_MESSAGE',
@@ -162,10 +198,12 @@ export async function initSidebarUI(shadow){
         renderUi();
 
         sendChatRequest(userMessage)
-                    .then(response =>{
+                    /*.then(response =>{
                         console.log('assistant reply received : ',response);
                         addAssistantMessage(response.payload , placeholderId);
-                    })
+
+                    })*/ // now streaming listener will gonna handle response
+
                     .catch(err =>{
                         console.log('Error sending chat request: ',err);
                     });
@@ -187,6 +225,7 @@ export async function initSidebarUI(shadow){
 
                 // combining userMessage and pageContext as payload
                 const payload = {
+                    conversationId,
                     userMessage,
                     pageData
                 };
@@ -240,7 +279,7 @@ export async function initSidebarUI(shadow){
         }
     }
 
-    const addAssistantMessage = (response , placeholderId) =>{
+    /*const addAssistantMessage = (response , placeholderId) =>{
 
         const index = contentMessages.findIndex(msg => msg.id === placeholderId);
 
@@ -258,7 +297,7 @@ export async function initSidebarUI(shadow){
         }
         
         renderUi();
-    };
+    };*/
 
 
     const renderMessages = () =>{
@@ -291,6 +330,74 @@ export async function initSidebarUI(shadow){
 
             requestAnimationFrame(scrollToBottom);
     };
+
+
+    function appendChunkToUi(chunk){
+
+        const contentState = shadowRootRef.querySelector('.content-state');
+        let lastMessageDiv = null;
+        const loadingDiv = contentState.querySelector('.ASSISTANT_LOADING');
+
+
+        if(loadingDiv){
+
+            // on first chunk arrives replace the loading with chunk
+            loadingDiv.className = 'message ASSISTANT_MESSAGE';
+            loadingDiv.innerHTML = '';
+            lastMessageDiv = loadingDiv;
+
+
+            const loadingIndex = contentMessages.findIndex(message => message.role === 'ASSISTANT_LOADING');
+
+            if(loadingIndex != -1){
+                contentMessages[loadingIndex] = {
+                    role: 'ASSISTANT_MESSAGE',
+                    text: ''
+                };
+            }
+
+        }else{
+            const messages = contentState.querySelectorAll('.ASSISTANT_MESSAGE');
+            lastMessageDiv = messages[messages.length-1];
+        }
+
+        
+
+        if(lastMessageDiv){
+
+            const currentText = lastMessageDiv.getAttribute('raw-data') || '';
+            const newText = currentText + chunk;
+            lastMessageDiv.setAttribute('raw-data' , newText);
+            lastMessageDiv.textContent = newText;
+            scrollToBottom();
+        }
+    }
+
+
+    function finalizeAiResponseStream(){
+        const contentState = shadowRootRef.querySelector('.content-state');
+        const messages = contentState.querySelectorAll('.ASSISTANT_MESSAGE');
+
+        let lastMessageDiv = messages[messages.length-1];
+
+        if(lastMessageDiv){
+
+            const fullText = lastMessageDiv.getAttribute('raw-data') || lastMessageDiv.textContent;
+
+            lastMessageDiv.innerHTML = parseMarkdown(fullText);
+            lastMessageDiv.removeAttribute('raw-data');
+
+
+            const index = contentMessages.findLastIndex(message => message.role === 'ASSISTANT_MESSAGE');
+
+            if(index != -1){
+                contentMessages[index].text = fullText;
+            }
+        }
+
+        scrollToBottom();
+
+    }
 
     export async function showSidebar(){
         /*if(!sidebarE1){
@@ -553,4 +660,34 @@ async function MountUsernameOnEmptyStateTitle(shadow){
 }
 
 
+function loadConversationIntoSidebar(convo){
+
+    conversationId = convo.id;
+    chrome.storage.local.set({conversationId});
+
+
+    contentMessages = convo.messages.map(msg =>({
+
+        role: msg.role === 'user'? 'USER_MESSAGE':'ASSISTANT_MESSAGE',
+        text: msg.text
+    }));
+
+    renderUi();
+}
+
+
+function handleNewChat(){
+
+    const newChatBtn = shadowRootRef.querySelector('.new-chat-btn');
+
+    newChatBtn.addEventListener('click' , (e) =>{
+
+        e.stopPropagation();
+        contentMessages = [];
+        conversationId = null;
+        chrome.storage.local.remove('conversationId');
+
+        renderUi();
+    });
+}
 

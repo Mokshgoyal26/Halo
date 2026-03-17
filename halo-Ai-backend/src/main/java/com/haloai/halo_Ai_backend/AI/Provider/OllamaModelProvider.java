@@ -24,7 +24,7 @@ public class OllamaModelProvider implements AiProvider {
         OllamaRequest request = new OllamaRequest(
                 "llama3.2",
                 prompt,
-                false
+                true
         );
 
         return webClient.post()

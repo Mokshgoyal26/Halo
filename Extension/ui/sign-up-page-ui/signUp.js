@@ -1,12 +1,12 @@
-export async function  getSignUpPage(shadow){
+export async function  getSignUpPage(sidebarContainer){
 
-    await mountSignUpPage(shadow);
+    await mountSignUpPage(sidebarContainer);
 }
 
 
-async function mountSignUpPage(shadow){
+async function mountSignUpPage(sidebarContainer){
 
-    let signupPageElement = shadow.querySelector('.auth-page');
+    let signupPageElement = sidebarContainer.querySelector('.auth-page');
 
     if(!signupPageElement){
 
@@ -20,38 +20,39 @@ async function mountSignUpPage(shadow){
 
         const template = document.createElement('template');
         template.innerHTML = html.trim();
-        shadow.appendChild(template.content.cloneNode(true));
+        sidebarContainer.appendChild(template.content.cloneNode(true));
 
 
-        const baseUrl = chrome.runtime.getURL('/assets');
+        const baseUrl = chrome.runtime.getURL('assets/');
         const resolvedCss = cssText.replace(/\.\.\/assets\//g, baseUrl);
         const style = document.createElement('style');
         style.innerText = resolvedCss;
         style.setAttribute('halo-signup-page','');
-        shadow.appendChild(style);
+        sidebarContainer.appendChild(style);
 
 
-        signupPageElement = shadow.querySelector('.auth-page');
+        signupPageElement = sidebarContainer.querySelector('.auth-page');
         console.log('signup-page existed: ', signupPageElement);
-        
+
+        closeButtonFeature(signupPageElement);
+        handleSignupRequest(signupPageElement);
+        handleLoginRequest(signupPageElement);
+        handleAuthFormToggle(signupPageElement);
+        //handleAuthPageDrag(signupPageElement);
+            
     }else{
         signupPageElement.classList.remove('hidden');
         console.log('signup-page already exists, unhidden');
     }
 
-
-    
-    closeButtonFeature(signupPageElement);
-    handleSignupRequest(signupPageElement);
-    handleLoginRequest(signupPageElement);
-    handleAuthFormToggle(signupPageElement);
-    handleAuthPageDrag(signupPageElement);
-    
-
 }
 
 
 function closeButtonFeature(signupPage){
+
+    signupPage.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
 
     const closebtn = signupPage.querySelector('.auth-close-btn');
 
@@ -60,7 +61,8 @@ function closeButtonFeature(signupPage){
         return;
     }
 
-    closebtn.addEventListener('click' ,() =>{
+    closebtn.addEventListener('click' ,(e) =>{
+        e.stopPropagation();
         signupPage.classList.add('hidden');
     });
 }
@@ -149,6 +151,14 @@ function handleLoginRequest(signupPage){
         }, (response) =>{
             
             handleAuthMessageOnUi(response, loginErrorDiv);
+
+            if(response.type === 'LOGIN_REPLY' && response.payload.username){
+                console.log('username recieved from login_reply : ',response.payload.username);
+
+                window.dispatchEvent(new CustomEvent('halo:login' , {
+                    detail: {'username':response.payload.username}
+                }));
+            }
         }); 
     });
 }
@@ -185,7 +195,7 @@ function handleAuthFormToggle(signupPage){
 }
 
 
-function handleAuthPageDrag(signupPage){
+/*function handleAuthPageDrag(signupPage){
 
     const header = signupPage.querySelector('.auth-name-logo');
 
@@ -199,7 +209,7 @@ function handleAuthPageDrag(signupPage){
 
         isDragging = true;
 
-        const rect = getBoundingClientRect();
+        const rect = signupPage.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
 
@@ -237,7 +247,7 @@ function handleAuthPageDrag(signupPage){
         isDragging = false;
         header.style.cursor = 'grab';
     });
-}
+}*/
 
 
 function handleAuthMessageOnUi(response , authMessageDiv){
