@@ -1,6 +1,7 @@
 package com.haloai.halo_Ai_backend.Handler;
 import com.haloai.halo_Ai_backend.AI.Templates.PromptTemplate;
 import com.haloai.halo_Ai_backend.AI.Templates.TemplateFactory;
+import com.haloai.halo_Ai_backend.DTO.ChatRequest;
 import com.haloai.halo_Ai_backend.Formatter.PageDataFormatter;
 import com.haloai.halo_Ai_backend.DTO.PageData.PageContext;
 import com.haloai.halo_Ai_backend.DTO.PageData.YoutubePageContext.YoutubePageContext;
@@ -30,13 +31,13 @@ public class YoutubePageHandler implements PageHandler{
     }
 
     @Override
-    public Flux<String> handlePageType(PageContext context , String userMessage){
+    public Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType){
 
         YoutubePageContext pageData = (YoutubePageContext) context;
         String formattedPageData = formatter.buildPageFormat(pageData);
         PromptTemplate template = factory.getTemplate(pageData.getPageType());
         String prompt = template.buildPrompt(userMessage,formattedPageData);
 
-        return aiService.getResponse(prompt);
+        return aiService.getResponse(prompt , modelType);
     }
 }

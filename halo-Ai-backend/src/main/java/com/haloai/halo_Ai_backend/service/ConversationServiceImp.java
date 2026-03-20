@@ -1,9 +1,8 @@
-package com.haloai.halo_Ai_backend.service.Conversations;
+package com.haloai.halo_Ai_backend.service;
 
 import com.haloai.halo_Ai_backend.DTO.ConversationHistory.ConversationResponseDto;
 import com.haloai.halo_Ai_backend.DTO.ConversationHistory.MessageDto;
 import com.haloai.halo_Ai_backend.Exceptions.ConversationNotFoundException;
-import com.haloai.halo_Ai_backend.Exceptions.MessageNotFoundException;
 import com.haloai.halo_Ai_backend.Exceptions.UsernameNotFoundException;
 import com.haloai.halo_Ai_backend.Model.Conversation;
 import com.haloai.halo_Ai_backend.Model.Message;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ConversationServiceImp implements ConversationService{
+public class ConversationServiceImp{
 
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
@@ -34,7 +33,7 @@ public class ConversationServiceImp implements ConversationService{
         this.userRepository = userRepository;
     }
 
-    @Override
+
     public Mono<Void> save(String username, String conversationId, String userMessage , String aiResponse) {
         return Mono.fromRunnable(() ->{
 
@@ -87,7 +86,7 @@ public class ConversationServiceImp implements ConversationService{
 
     }
 
-    @Override
+
     public List<ConversationResponseDto> getChatHistory(String username){
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found : "+username));
@@ -125,7 +124,5 @@ public class ConversationServiceImp implements ConversationService{
                                 .build()
                 ).collect(Collectors.toList());
     }
-
-
 
 }

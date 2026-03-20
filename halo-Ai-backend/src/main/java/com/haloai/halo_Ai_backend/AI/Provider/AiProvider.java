@@ -1,5 +1,6 @@
 package com.haloai.halo_Ai_backend.AI.Provider;
 
+import com.haloai.halo_Ai_backend.DTO.ChatRequest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -10,6 +11,8 @@ public interface AiProvider {
         @return Ai generated response
      */
     Flux<String> generateResponse(String prompt);
+
+    ChatRequest.AiModelType getModelType();
 }
 
 

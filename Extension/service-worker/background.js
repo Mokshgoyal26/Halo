@@ -195,6 +195,52 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
 
+    if(message.type === 'LOGOUT_REQUEST'){
+
+        (async() =>{
+            try{
+
+                const {refreshToken} = await chrome.storage.local.get('refreshToken');
+
+                await fetch("http://localhost:9090/auth/logout",{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({refreshToken}) 
+                });
+
+
+                await chrome.storage.local.remove([
+                    'jwtToken',
+                    'refreshToken',
+                    'conversationId',
+                    'username'
+                ]);
+
+                console.log('Logged out storgae cleared');
+
+                sendResponse({
+                    type:'LOGOUT_SUCCESS',
+                });
+
+            } catch(err) {
+                
+                await chrome.storage.local.remove([
+                    'jwtToken',
+                    'refreshToken',
+                    'username', 
+                    'conversationId'
+                ]);
+    
+                sendResponse({ type: 'LOGOUT_SUCCESS' });
+            }
+            
+        })();
+
+
+        return true;
+    }
+
+
     if(message.type === 'GET_CONVERSATIONS'){
         (async() =>{
             try{

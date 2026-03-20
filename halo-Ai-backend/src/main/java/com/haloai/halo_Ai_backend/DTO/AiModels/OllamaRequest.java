@@ -1,4 +1,4 @@
-package com.haloai.halo_Ai_backend.DTO;
+package com.haloai.halo_Ai_backend.DTO.AiModels;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

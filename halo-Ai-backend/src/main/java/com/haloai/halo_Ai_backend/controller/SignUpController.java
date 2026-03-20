@@ -1,8 +1,9 @@
 package com.haloai.halo_Ai_backend.controller;
 
-import com.haloai.halo_Ai_backend.DTO.AuthResponse;
-import com.haloai.halo_Ai_backend.DTO.LoginRequest;
-import com.haloai.halo_Ai_backend.DTO.SignUpRequest;
+import com.haloai.halo_Ai_backend.DTO.Security.AuthResponse;
+import com.haloai.halo_Ai_backend.DTO.Security.LoginRequest;
+import com.haloai.halo_Ai_backend.DTO.Security.LogoutRequest;
+import com.haloai.halo_Ai_backend.DTO.Security.SignUpRequest;
 import com.haloai.halo_Ai_backend.Model.RefreshToken;
 import com.haloai.halo_Ai_backend.Model.User;
 import com.haloai.halo_Ai_backend.service.JWTService;
@@ -73,5 +74,13 @@ public class SignUpController {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
         return ResponseEntity.ok(new AuthResponse(accessToken , refreshToken.getToken() , user.getUsername()));
+    }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<String> Logout(@RequestBody LogoutRequest request){
+
+        refreshTokenService.deleteRefreshToken(request.getRefreshToken());
+
+        return ResponseEntity.ok("logout successful");
     }
 }

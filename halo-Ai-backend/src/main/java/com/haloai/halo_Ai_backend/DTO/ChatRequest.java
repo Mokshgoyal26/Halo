@@ -12,4 +12,11 @@ public class ChatRequest {
     private String conversationId;
     private PageContext pageData;
     private String userMessage;
+    private AiModelType modelType;
+
+    public enum AiModelType{
+        OPENAI,
+        CLAUDE,
+        GEMINI
+    }
 }

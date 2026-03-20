@@ -1,13 +1,13 @@
 package com.haloai.halo_Ai_backend.AI.Provider;
 
-import com.haloai.halo_Ai_backend.DTO.OllamaRequest;
-import com.haloai.halo_Ai_backend.DTO.OllamaResponse;
+import com.haloai.halo_Ai_backend.DTO.AiModels.OllamaRequest;
+import com.haloai.halo_Ai_backend.DTO.AiModels.OllamaResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 @Service
-public class OllamaModelProvider implements AiProvider {
+public class OllamaModelProvider{
 
     private final WebClient webClient ;
 
@@ -18,7 +18,7 @@ public class OllamaModelProvider implements AiProvider {
     }
 
 
-    @Override
+
     public Flux<String> generateResponse(String prompt){
 
         OllamaRequest request = new OllamaRequest(

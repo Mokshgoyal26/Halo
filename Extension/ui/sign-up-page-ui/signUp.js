@@ -20,13 +20,30 @@ async function mountSignUpPage(sidebarContainer){
 
         const template = document.createElement('template');
         template.innerHTML = html.trim();
+
         sidebarContainer.appendChild(template.content.cloneNode(true));
 
 
         const baseUrl = chrome.runtime.getURL('assets/');
         const resolvedCss = cssText.replace(/\.\.\/assets\//g, baseUrl);
+
+        const scopedCss = resolvedCss.replace(
+            /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g,
+            (match, selector, separator) => {
+                // skip already scoped, keyframes, and html/body selectors
+                if (selector.trim().startsWith('.auth-page') ||
+                    selector.trim().startsWith('@') ||
+                    selector.trim().startsWith('from') ||
+                    selector.trim().startsWith('to')) {
+                    return match;
+                }
+                return `.auth-page ${selector.trim()}${separator}`;
+            }
+        );
+        
         const style = document.createElement('style');
-        style.innerText = resolvedCss;
+        //style.innerText = resolvedCss;
+        style.innerText = scopedCss;
         style.setAttribute('halo-signup-page','');
         sidebarContainer.appendChild(style);
 

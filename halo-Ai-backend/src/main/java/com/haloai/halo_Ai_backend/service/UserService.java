@@ -1,6 +1,6 @@
 package com.haloai.halo_Ai_backend.service;
 
-import com.haloai.halo_Ai_backend.DTO.SignUpRequest;
+import com.haloai.halo_Ai_backend.DTO.Security.SignUpRequest;
 import com.haloai.halo_Ai_backend.Exceptions.UsernameAlreadyExistsException;
 import com.haloai.halo_Ai_backend.Exceptions.UsernameNotFoundException;
 import com.haloai.halo_Ai_backend.Model.User;

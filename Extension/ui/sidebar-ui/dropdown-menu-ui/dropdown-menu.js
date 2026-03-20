@@ -48,6 +48,15 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
     const backBtn = wrapper.querySelector('.back-btn');
 
 
+    window.addEventListener('halo:login', () => {
+        logoutBtn.style.display = 'flex';
+    });
+
+    chrome.storage.local.get('jwtToken', ({ jwtToken }) => {
+        logoutBtn.style.display = jwtToken ? 'flex' : 'none';
+    });
+
+
     triggerBtn.addEventListener('click',(e) =>{
 
         e.stopPropagation();
@@ -71,6 +80,13 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
 
         const chatHistoryList = wrapper.querySelector('.chatHistory-list');
 
+        const {jwtToken} =  chrome.storage.local.get('jwtToken');
+
+        if(!jwtToken){
+            showSigninChatHistory(wrapper);
+            return;
+        }
+
         await loadChatHistory(chatHistoryList , onConversationSelect , () =>{
 
             if(typeof onConversationSelect !== 'function'){
@@ -90,7 +106,37 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
         historyPage.classList.add('hidden');
         menuPage.classList.remove('hidden');
     });
+
+
+    const logoutBtn = wrapper.querySelector('.menu-items.logout');
+
+    logoutBtn.addEventListener('click' , () =>{
+
+        chrome.runtime.sendMessage({
+            type:'LOGOUT_REQUEST'
+        } , (response) =>{
+
+            if(chrome.runtime.lastError){
+                console.error('Logout message error:', chrome.runtime.lastError.message);
+                return;
+            }
+        
+            if(!response){
+                console.error('No response received from background');
+                return;
+            }
+
+            if(response.type === 'LOGOUT_SUCCESS'){
+                logoutBtn.style.display = 'none';
+
+                showSigninChatHistory(wrapper);
+
+                window.dispatchEvent(new CustomEvent('halo:Logout'));
+            }
+        });
+    });
 }
+
 
 
 function fetchConversations(){
@@ -201,5 +247,27 @@ async function loadChatHistory(chatHistoryList , onConversationSelect , onclose)
         console.log('failed to load chat history: ',error);
 
     }
+
+
+}
+
+
+function showSigninChatHistory(wrapper){
+
+    const chatHistoryList = wrapper.querySelector('.chatHistory-list');
+
+    if(!chatHistoryList) return;
+
+    chatHistoryList.innerHTML = `<div class="history-signin-prompt">
+            <div class="history-signin-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" 
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" 
+                        width="32" height="32">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="history-signin-text">Sign in to see your chats</div>
+        </div>`;
 }
 

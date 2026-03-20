@@ -2,6 +2,7 @@ package com.haloai.halo_Ai_backend.Handler;
 
 import com.haloai.halo_Ai_backend.AI.Templates.PromptTemplate;
 import com.haloai.halo_Ai_backend.AI.Templates.TemplateFactory;
+import com.haloai.halo_Ai_backend.DTO.ChatRequest;
 import com.haloai.halo_Ai_backend.Formatter.PageDataFormatter;
 import com.haloai.halo_Ai_backend.DTO.PageData.GenericPageContext.GenericPageContext;
 import com.haloai.halo_Ai_backend.DTO.PageData.PageContext;
@@ -31,14 +32,14 @@ public class GenericPageHandler implements PageHandler{
     }
 
     @Override
-    public Flux<String> handlePageType(PageContext context , String userMessage){
+    public Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType){
         GenericPageContext pageData = (GenericPageContext) context;
 
         String formattedPageData = formatter.buildPageFormat(pageData);
         PromptTemplate template = factory.getTemplate(pageData.getPageType());
         String prompt = template.buildPrompt(userMessage,formattedPageData);
 
-        return aiService.getResponse(prompt);
+        return aiService.getResponse(prompt , modelType);
     }
 
 }

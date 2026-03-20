@@ -49,21 +49,44 @@
                 <div class="content-state">
                     <!-- dynamic content will be injected here -->
                 </div>
+                
             </div>
-            <div class="sidebar-fade-content-div"></div>
+
+            <div class="sidebar-fade-content-div"></div> 
+
         </div>
-        <div class="sidebar-footer-container">
-            <div class="input-div">
-                <textarea class="text-input" placeholder="Ask anything" rows="1"></textarea>
-                <button class="send-btn">
-                    <img class="send-btn-icon">
-                </button>
+    </div>
+
+    <div class="sidebar-footer-container">
+        <div class="input-wrapper">
+    
+            <textarea class="text-input" placeholder="Ask anything..." rows="1"></textarea>
+    
+            <div class="input-actions">
+                <div class="left-actions">
+    
+                    <button class="model-btn active" data-model="gpt-4o">
+                        <span class="model-name">GPT-4o</span>
+                    </button>
+                    <button class="model-btn" data-model="claude-sonnet">
+                        <span class="model-name">Claude Sonnet</span>
+                    </button>
+                    <button class="model-btn" data-model="gemini-pro">
+                        <span class="model-name">Gemini Pro</span>
+                    </button>
+    
+                </div>
+    
+                <div class="right-actions">
+                    <button class="upload-btn">
+                        <img class="upload-btn-icon">
+                    </button>
+                    <button class="send-btn">
+                        <img class="send-btn-icon">
+                    </button>
+                </div>
             </div>
-            <div class="end-row-btns">
-                <button class="upload-btn">
-                    <img class="upload-btn-icon">
-                </button>
-            </div>
+    
         </div>
     </div>
 </div>

@@ -7,6 +7,7 @@ let contentMessages = [];
 let shadowRootRef = null;
 let userInput;
 let conversationId = null;
+let selected_Model = 'OPENAI';
 
 
 async function mountSidebar(shadow){
@@ -163,8 +164,21 @@ export async function initSidebarUI(shadow){
 
 
         handleNewChat();
-        
-}
+
+        handleAiModels();
+
+
+        window.addEventListener('halo:Logout' , () =>{
+
+            contentMessages = [];
+            conversationId = null;
+            
+            const titleElement = shadowRootRef.querySelector('.empty-state-title');
+            if(titleElement) titleElement.textContent = 'Hi 👋';
+
+            renderUi();
+        });
+    }
 
 
     const handleSend = async () =>{
@@ -227,6 +241,7 @@ export async function initSidebarUI(shadow){
                 const payload = {
                     conversationId,
                     userMessage,
+                    modelType:selected_Model,
                     pageData
                 };
 
@@ -688,6 +703,29 @@ function handleNewChat(){
         chrome.storage.local.remove('conversationId');
 
         renderUi();
+    });
+}
+
+
+function handleAiModels(){
+
+    shadowRootRef.querySelectorAll(".model-btn").forEach(btn => {
+        btn.addEventListener('click' ,() =>{
+
+            shadowRootRef.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+
+            btn.classList.add('active');
+
+
+            const modelMap = {
+                "gpt-4o":        "OPENAI",
+                "claude-sonnet": "CLAUDE",
+                "gemini-pro":    "GEMINI"
+            };
+
+            selected_Model = modelMap[btn.dataset.model];
+            console.log("selected Model : ", selected_Model);
+        });
     });
 }
 
