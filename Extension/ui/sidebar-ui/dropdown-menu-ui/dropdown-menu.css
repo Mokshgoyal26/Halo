@@ -93,7 +93,6 @@
 
 
 
-/* chatHistory page styles */
 
 .dropdown-chatHistory-page {
     display: flex;
@@ -201,7 +200,6 @@
     height: 12px;
 }
 
-/* Empty / loading states */
 .history-empty,
 .history-loading {
     font-family: Inter, system-ui, sans-serif;
@@ -210,4 +208,333 @@
     text-align: center;
     padding: 16px 10px;
     margin: 0;
+}
+
+/* ── Settings page (just the billing button menu) ── */
+
+.dropdown-settings-page {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    min-width: 200px;
+}
+
+.dropdown-settings-page.hidden {
+    display: none;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px 4px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 4px;
+}
+
+.settings-header span {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A9EFF;
+}
+
+.settings-back-btn {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: background-color 120ms linear, color 120ms linear;
+}
+
+.settings-back-btn:hover {
+    background-color: rgba(206, 206, 217, 0.07);
+    color: #ffffff;
+}
+
+.settings-back-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* the menu list inside settings page */
+.settings-menu {
+    padding: 4px;
+}
+
+/* billing row — chevron pushed to the right */
+.menu-items.billing {
+    justify-content: flex-start;
+}
+
+.menu-items.billing .chevron-right {
+    width: 13px;
+    height: 13px;
+    margin-left: auto;
+    opacity: 0.4;
+    flex-shrink: 0;
+    transition: opacity 120ms linear;
+}
+
+.menu-items.billing:hover .chevron-right {
+    opacity: 0.8;
+}
+
+
+/* ── Billing page (API key cards) ── */
+
+.dropdown-billing-page {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    min-width: 240px;
+    max-height: 420px;
+}
+
+.dropdown-billing-page.hidden {
+    display: none;
+}
+
+/* reuses .settings-header and .settings-back-btn — no extra rules needed */
+
+.settings-body {
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 2px;
+}
+
+.settings-section-label {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 4px 4px 0;
+}
+
+.settings-section-hint {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.25);
+    margin: 0 4px 4px;
+    line-height: 1.5;
+}
+
+/* ── Provider cards ── */
+
+.api-key-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 120ms linear;
+}
+
+.api-key-card:focus-within {
+    border-color: rgba(74, 158, 255, 0.35);
+}
+
+.api-key-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.provider-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.provider-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.provider-logo svg {
+    width: 16px;
+    height: 16px;
+}
+
+.claude-logo  { background: rgba(194, 115, 72, 0.15); color: #c27348; }
+.openai-logo  { background: rgba(26,  127, 75, 0.15); color: #1a9e5c; }
+.gemini-logo  { background: rgba(66,  133, 244, 0.15); color: #4A9EFF; }
+
+.provider-name {
+    display: block;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.2;
+}
+
+.provider-model {
+    display: block;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Status badge ── */
+
+.key-status-badge {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+}
+
+.key-status-badge.unconfigured {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.key-status-badge.configured {
+    background: rgba(26, 158, 92, 0.15);
+    color: #1a9e5c;
+}
+
+/* ── Input row ── */
+
+.api-key-input-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.api-key-input {
+    flex: 1;
+    height: 30px;
+    padding: 0 9px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    outline: none;
+    transition: border-color 120ms linear;
+}
+
+.api-key-input:focus {
+    border-color: rgba(74, 158, 255, 0.5);
+}
+
+.api-key-input::placeholder {
+    color: rgba(255, 255, 255, 0.18);
+}
+
+.key-toggle-btn {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+    transition: background-color 120ms linear, color 120ms linear;
+}
+
+.key-toggle-btn:hover {
+    background-color: rgba(206, 206, 217, 0.07);
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.key-toggle-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+/* ── Action buttons ── */
+
+.api-key-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.key-save-btn {
+    all: unset;
+    box-sizing: border-box;
+    flex: 1;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: rgba(74, 158, 255, 0.15);
+    border: 1px solid rgba(74, 158, 255, 0.25);
+    color: #4A9EFF;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms linear, border-color 120ms linear;
+}
+
+.key-save-btn:hover {
+    background: rgba(74, 158, 255, 0.25);
+    border-color: rgba(74, 158, 255, 0.4);
+}
+
+.key-save-btn:active {
+    transform: scale(0.97);
+}
+
+.key-clear-btn {
+    all: unset;
+    box-sizing: border-box;
+    height: 28px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: rgba(255, 80, 80, 0.06);
+    border: 1px solid rgba(255, 80, 80, 0.15);
+    color: rgba(255, 107, 107, 0.7);
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 120ms linear, color 120ms linear;
+}
+
+.key-clear-btn:hover {
+    background: rgba(255, 80, 80, 0.12);
+    color: #ff6b6b;
+}
+
+.key-clear-btn:active {
+    transform: scale(0.97);
+}
+
+/* ── Shared ── */
+
+.hidden {
+    display: none !important;
 }

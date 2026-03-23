@@ -18,21 +18,19 @@ public class ClaudeModelProvider implements AiProvider{
     private final ObjectMapper objectMapper;
     private final WebClient webClient;
 
-    private String apiKey;
-    private String model;
-
     public ClaudeModelProvider(WebClient.Builder webClientBuilder , ObjectMapper objectMapper ){
         this.webClient = webClientBuilder
-                .baseUrl("https://api/anthropic.com/v1")
+                .baseUrl("https://api.anthropic.com/v1")
                 .build();
 
         this.objectMapper = objectMapper;
     }
 
 
-    public Flux<String> generateResponse(String prompt){
+    @Override
+    public Flux<String> generateResponse(String prompt , String apiKey , String model){
 
-        ClaudeRequestDto request  = buildRequest(prompt);
+        ClaudeRequestDto request  = buildRequest(prompt , model);
 
         return webClient.post()
                 .uri("/messages")
@@ -51,9 +49,9 @@ public class ClaudeModelProvider implements AiProvider{
                 .mapNotNull(this::extractContent);
     }
 
-    private ClaudeRequestDto buildRequest(String prompt){
+    private ClaudeRequestDto buildRequest(String prompt , String model){
 
-        ClaudeRequestDto.Message message  = new ClaudeRequestDto.Message("user",prompt);
+        ClaudeRequestDto.Message message  = new ClaudeRequestDto.Message("user", prompt);
 
         return new ClaudeRequestDto(model , 1024 , List.of(message) , true);
     }

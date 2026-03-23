@@ -2,6 +2,7 @@ package com.haloai.halo_Ai_backend.AI.Provider;
 
 import com.haloai.halo_Ai_backend.DTO.AiModels.OllamaRequest;
 import com.haloai.halo_Ai_backend.DTO.AiModels.OllamaResponse;
+import com.haloai.halo_Ai_backend.DTO.ChatRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -19,10 +20,11 @@ public class OllamaModelProvider{
 
 
 
-    public Flux<String> generateResponse(String prompt){
+
+    public Flux<String> generateResponse(String prompt , String apiKey , String model){
 
         OllamaRequest request = new OllamaRequest(
-                "llama3.2",
+                model,
                 prompt,
                 true
         );
@@ -33,5 +35,10 @@ public class OllamaModelProvider{
                     .retrieve()
                     .bodyToFlux(OllamaResponse.class)
                     .map(OllamaResponse::getResponse);
+    }
+
+
+    public ChatRequest.AiModelType getModelType() {
+        return ChatRequest.AiModelType.OLLAMA;
     }
 }

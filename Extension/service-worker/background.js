@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if(res.status === 401){
                     console.log("Access Token is expired , refreshing....");
 
-                    jwtToken = await refreshAccessTokenFunction();
+                    jwtToken = await refreshAccessTokenFunction(sender.tab.id);
 
                     res = await fetch('http://localhost:9090/api/chatMessage', {
                         method: 'POST',
@@ -256,7 +256,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if(res.status === 401){
 
                     console.log('jwt access token expired , refreshing token....');
-                    jwtToken = await refreshAccessTokenFunction();
+                    jwtToken = await refreshAccessTokenFunction(sender.tab.id);
                     
                     res = await fetch('http://localhost:9090/api/conversations',{
 
@@ -306,10 +306,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
                 if(res.status === 401){
 
-                    jwtToken = await refreshAccessTokenFunction();
+                    jwtToken = await refreshAccessTokenFunction(sender.tab.id);
                     console.log('access token expired , refreshing accessToken....');
 
-                    res = await fetch(`http://localhost:9090/api/${conversationId}/messages`,{
+                    res = await fetch(`http://localhost:9090/api/conversations/${conversationId}/messages`,{
                             method:'GET',
                             headers: {'Authorization':`Bearer ${jwtToken}`}
                         });
@@ -338,11 +338,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 
-async function refreshAccessTokenFunction(){
+async function refreshAccessTokenFunction(tabId){
 
     const {refreshToken} = await chrome.storage.local.get("refreshToken");
 
     if(!refreshToken){
+        await handleRefreshTokenExpired(tabId);
         throw new Error("No refresh token available");
     }
 
@@ -361,6 +362,7 @@ async function refreshAccessTokenFunction(){
     const data = await res.json();
 
     if(!res.ok){
+        await handleRefreshTokenExpired(tabId);
         throw new Error(data.message || "Refresh Token Expired , please login again");
     }
 
@@ -372,4 +374,19 @@ async function refreshAccessTokenFunction(){
 
     return data.accessToken;
 
+}
+
+
+async function handleRefreshTokenExpired(tabId){
+    await chrome.storage.local.remove([
+        'jwtToken',
+        'refreshToken',
+        'conversationId',
+        'username'
+    ]);
+
+
+    chrome.tabs.sendMessage(tabId,{
+        type:'REFRESH_TOKEN_EXPIRED'
+    });
 }

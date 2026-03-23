@@ -178,6 +178,9 @@ export async function initSidebarUI(shadow){
 
             renderUi();
         });
+
+
+        handleSessionExpired(sidebarE1);
     }
 
 
@@ -227,44 +230,70 @@ export async function initSidebarUI(shadow){
     function sendChatRequest(userMessage){
         return new Promise((resolve , reject) =>{
 
-            // ask collectContext content-script for pageContext
-            chrome.runtime.sendMessage({type:'GET_PAGE_CONTEXT'}, (pageData) =>{
-                console.log("Sending GET_PAGE_CONTEXT...");
-                if(chrome.runtime.lastError){
-                    console.log("GET_PAGE_CONTEXT error:", chrome.runtime.lastError);
-                    return reject(chrome.runtime.lastError);
+            chrome.storage.sync.get(`apiKey_${selected_Model}`, (keyResult) =>{
+
+                const apiKey = keyResult[`apiKey_${selected_Model}`];
+
+                if(!apiKey){
+            
+                    const loadingIndex = contentMessages.findIndex(m => m.role === 'ASSISTANT_LOADING');
+
+                    if(loadingIndex != -1){
+                        contentMessages.splice(loadingIndex,1);
+                    }
+
+                    contentMessages.push({
+                        role:'ASSISTANT_MESSAGE',
+                        text:`No api key set for ${selected_Model}. Go to setting -> Billings to add one`
+                    });
+
+                    renderUi();
+                    return reject("No api key provided");
                 }
 
-                console.log("PageData received:", pageData);
 
-                // combining userMessage and pageContext as payload
-                const payload = {
-                    conversationId,
-                    userMessage,
-                    modelType:selected_Model,
-                    pageData
-                };
-
-                console.log("Sending CHAT_REQUEST with payload:", payload);
-
-                // sending payload to background eventually move to the backend 
-                chrome.runtime.sendMessage({
-                    type:'CHAT_REQUEST',
-                    payload
-                }, (response) =>{
+                chrome.runtime.sendMessage({type:'GET_PAGE_CONTEXT'}, (pageData) =>{
+                    console.log("Sending GET_PAGE_CONTEXT...");
                     if(chrome.runtime.lastError){
-                        console.log("CHAT_REQUEST error:", chrome.runtime.lastError);
+                        console.log("GET_PAGE_CONTEXT error:", chrome.runtime.lastError);
                         return reject(chrome.runtime.lastError);
                     }
-
-                    if(response.type === 'ASSISTANT_ERROR'){
-                        return reject(response.payload);
-                    }
-
-                    console.log("CHAT_REQUEST response:", response);
-                    resolve(response);
+    
+                    console.log("PageData received:", pageData);
+    
+                    // combining userMessage and pageContext as payload
+                    const payload = {
+                        conversationId,
+                        userMessage,
+                        modelType:selected_Model,
+                        model: getDefaultModels(selected_Model),
+                        apiKey,
+                        pageData
+                    };
+    
+                    console.log("Sending CHAT_REQUEST with payload:", payload);
+    
+                    // sending payload to background eventually move to the backend 
+                    chrome.runtime.sendMessage({
+                        type:'CHAT_REQUEST',
+                        payload
+                    }, (response) =>{
+                        if(chrome.runtime.lastError){
+                            console.log("CHAT_REQUEST error:", chrome.runtime.lastError);
+                            return reject(chrome.runtime.lastError);
+                        }
+    
+                        if(response.type === 'ASSISTANT_ERROR'){
+                            return reject(response.payload);
+                        }
+    
+                        console.log("CHAT_REQUEST response:", response);
+                        resolve(response);
+                    });
                 });
+
             });
+
         });
     };
 
@@ -386,6 +415,18 @@ export async function initSidebarUI(shadow){
             lastMessageDiv.textContent = newText;
             scrollToBottom();
         }
+    }
+
+    function getDefaultModels(modelType){
+
+        const defaults = {
+            CLAUDE: 'claude-sonnet-4-20250514',
+            OPENAI: 'gpt-4o',
+            GEMINI: 'gemini-2.0-flash',
+            OLLAMA: 'llama3.2'
+        };
+
+        return defaults[modelType];
     }
 
 
@@ -720,7 +761,8 @@ function handleAiModels(){
             const modelMap = {
                 "gpt-4o":        "OPENAI",
                 "claude-sonnet": "CLAUDE",
-                "gemini-pro":    "GEMINI"
+                "gemini-pro":    "GEMINI",
+                "llama3.2":      "OLLAMA"
             };
 
             selected_Model = modelMap[btn.dataset.model];
@@ -729,3 +771,26 @@ function handleAiModels(){
     });
 }
 
+
+function handleSessionExpired(sidebarE1){
+
+    chrome.runtime.onMessage.addListener(async (message) =>{
+
+        if(message.type === 'REFRESH_TOKEN_EXPIRED'){
+            contentMessages = [];
+            conversationId = null;
+            window.dispatchEvent(new CustomEvent('halo:Logout'));
+            await getSignUpPage(sidebarE1);
+
+            const signupPage = sidebarE1.querySelector('.auth-page');
+            const loginErrorDiv = signupPage.querySelector('#login-error');
+
+            if(loginErrorDiv){
+                loginErrorDiv.textContent = 'Your session is expired . pls login again to continue!';
+                loginErrorDiv.classList.remove('hidden','success');
+                loginErrorDiv.classList.add('error');
+            }
+        }
+
+    });
+}

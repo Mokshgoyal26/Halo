@@ -46,6 +46,13 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
     const historyPage = wrapper.querySelector('.dropdown-chatHistory-page');
     const chatHistoryBtn = wrapper.querySelector('.menu-items.chat-history');
     const backBtn = wrapper.querySelector('.back-btn');
+    const settingsPage = wrapper.querySelector('.dropdown-settings-page');
+    const billingPage = wrapper.querySelector('.dropdown-billing-page');
+    const logoutBtn = wrapper.querySelector('.menu-items.logout');
+
+    wrapper.addEventListener('click',(e) =>{
+        e.stopPropagation();
+    });
 
 
     window.addEventListener('halo:login', () => {
@@ -64,10 +71,13 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
     });
 
     document.addEventListener('click' ,(e) =>{
+
         if(e.composedPath().includes(triggerBtn)) return;
         wrapper.classList.remove('open');
 
         historyPage.classList.add('hidden');
+        settingsPage.classList.add('hidden');
+        billingPage.classList.add('hidden');
         menuPage.classList.remove('hidden');
     });
 
@@ -80,23 +90,24 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
 
         const chatHistoryList = wrapper.querySelector('.chatHistory-list');
 
-        const {jwtToken} =  chrome.storage.local.get('jwtToken');
+        chrome.storage.local.get('jwtToken', async ({ jwtToken }) => {
 
-        if(!jwtToken){
-            showSigninChatHistory(wrapper);
-            return;
-        }
-
-        await loadChatHistory(chatHistoryList , onConversationSelect , () =>{
-
-            if(typeof onConversationSelect !== 'function'){
-                console.error('initDropdownMenuEvents: onConversationSelect callback is missing!');
+            if (!jwtToken) {
+                showSigninChatHistory(wrapper);
                 return;
             }
-
-            wrapper.classList.remove('open');
-            historyPage.classList.add('hidden');
-            menuPage.classList.remove('hidden');
+    
+            await loadChatHistory(chatHistoryList, onConversationSelect, () => {
+    
+                if (typeof onConversationSelect !== 'function') {
+                    console.error('initDropdownMenuEvents: onConversationSelect callback is missing!');
+                    return;
+                }
+    
+                wrapper.classList.remove('open');
+                historyPage.classList.add('hidden');
+                menuPage.classList.remove('hidden');
+            });
         });
     });
 
@@ -107,8 +118,6 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
         menuPage.classList.remove('hidden');
     });
 
-
-    const logoutBtn = wrapper.querySelector('.menu-items.logout');
 
     logoutBtn.addEventListener('click' , () =>{
 
@@ -129,12 +138,52 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
             if(response.type === 'LOGOUT_SUCCESS'){
                 logoutBtn.style.display = 'none';
 
+                chrome.storage.sync.remove(['apiKey_CLAUDE', 'apiKey_OPENAI', 'apiKey_GEMINI']);
                 showSigninChatHistory(wrapper);
 
                 window.dispatchEvent(new CustomEvent('halo:Logout'));
             }
         });
     });
+
+
+    const settingsBtn = wrapper.querySelector('.menu-items.settings');
+    const settingsBackBtn = wrapper.querySelector('.settings-back-btn');
+
+    settingsBtn.addEventListener('click' , (e) =>{
+
+        e.stopPropagation();
+
+        settingsPage.classList.remove('hidden');
+        menuPage.classList.add('hidden');
+    });
+
+    settingsBackBtn.addEventListener('click',(e) =>{
+        e.stopPropagation();
+        settingsPage.classList.add('hidden');
+        menuPage.classList.remove('hidden');
+    });
+
+
+    const billingBtn = wrapper.querySelector('.menu-items.billing');
+    const billingBackBtn = wrapper.querySelector('.billing-back-btn');
+
+    billingBtn.addEventListener('click',(e)=>{
+        e.stopPropagation();
+
+        billingPage.classList.remove('hidden');
+        settingsPage.classList.add('hidden');
+
+    });
+
+    billingBackBtn.addEventListener('click' , (e) =>{
+
+        e.stopPropagation();
+        billingPage.classList.add('hidden');
+        settingsPage.classList.remove('hidden');
+    });
+
+    initBillingsEvents(wrapper);
 }
 
 
@@ -271,3 +320,104 @@ function showSigninChatHistory(wrapper){
         </div>`;
 }
 
+
+function initBillingsEvents(wrapper){
+
+    const providers = ['CLAUDE','OPENAI','GEMINI'];
+
+    providers.forEach(provider =>{
+        chrome.storage.sync.get(`apiKey_${provider}` , (result) =>{
+            if(result[`apiKey_${provider}`]){
+                markConfigured(wrapper , provider);
+            }
+        });
+    });
+
+    wrapper.querySelectorAll('.key-toggle-btn').forEach(btn =>{
+        btn.addEventListener('click' , (e) =>{
+
+            const provider = btn.dataset.toggle;
+            const input = wrapper.querySelector(`[data-input="${provider}"]`);
+
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+    });
+
+
+    wrapper.querySelectorAll('.key-save-btn').forEach(btn =>{
+        btn.addEventListener('click' , (e) =>{
+
+            chrome.storage.local.get('jwtToken' , ({jwtToken}) =>{
+
+                if(!jwtToken){
+
+                    const provider = btn.dataset.save;
+                    const card = wrapper.querySelector(`[data-provider="${provider}"]`);
+                    showKeyError(card , "sign in to save API keys");
+                    return;
+                }
+
+                const provider = btn.dataset.save;
+                const input = wrapper.querySelector(`[data-input="${provider}"]`);
+                const key = input.value.trim();
+
+                if(!key) return;
+
+                chrome.storage.sync.set({[`apiKey_${provider}`]:key} , () =>{
+                    markConfigured(wrapper, provider);
+                    input.value = '';
+                    input.type = 'password';
+                });
+
+            });
+        });
+    });
+
+    wrapper.querySelectorAll('.key-clear-btn').forEach(btn =>{
+        btn.addEventListener('click' , () =>{
+
+            const provider = btn.dataset.clear;
+
+            chrome.storage.sync.remove(`apiKey_${provider}` , () =>{
+                markUnConfigured(wrapper, provider);
+            });
+        });
+    });
+}
+
+
+function markConfigured(wrapper , provider){
+    const badge = wrapper.querySelector(`[data-badge="${provider}"]`);
+    const clear = wrapper.querySelector(`[data-clear="${provider}"]`);
+
+    badge.textContent = 'Active';
+    badge.className = 'key-status-badge configured';
+    clear.classList.remove('hidden');
+}
+
+function markUnConfigured(wrapper , provider){
+    const badge = wrapper.querySelector(`[data-badge="${provider}"]`);
+    const clear = wrapper.querySelector(`[data-clear="${provider}"]`);
+
+    badge.textContent = 'Not set';
+    badge.className = 'key-status-badge unconfigured';
+    clear.classList.add('hidden');
+}
+
+
+function showKeyError(card , message){
+
+    const existing = card.querySelector('.key-error-msg');
+    
+    if(existing)  existing.remove();
+
+    const err = document.createElement('p');
+    err.className = 'key-error-msg';
+    err.textContent = message;
+    card.appendChild(err);
+
+
+    setTimeout(() =>{
+        err.remove()
+    }, 5000);
+}

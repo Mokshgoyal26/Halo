@@ -32,14 +32,16 @@ public class GenericPageHandler implements PageHandler{
     }
 
     @Override
-    public Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType){
+    public Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType ,
+                                       String apiKey , String model){
+
         GenericPageContext pageData = (GenericPageContext) context;
 
         String formattedPageData = formatter.buildPageFormat(pageData);
         PromptTemplate template = factory.getTemplate(pageData.getPageType());
         String prompt = template.buildPrompt(userMessage,formattedPageData);
 
-        return aiService.getResponse(prompt , modelType);
+        return aiService.getResponse(prompt , modelType , apiKey , model);
     }
 
 }

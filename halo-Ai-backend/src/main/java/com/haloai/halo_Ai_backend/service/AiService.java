@@ -16,9 +16,9 @@ public class AiService {
         this.registry = registry;
     }
 
-    public Flux<String> getResponse(String prompt , ChatRequest.AiModelType modelType){
+    public Flux<String> getResponse(String prompt , ChatRequest.AiModelType modelType , String apiKey , String model){
 
-        return registry.getProvider(modelType).generateResponse(prompt);
+        return registry.getProvider(modelType).generateResponse(prompt ,apiKey,model);
     }
 
 }

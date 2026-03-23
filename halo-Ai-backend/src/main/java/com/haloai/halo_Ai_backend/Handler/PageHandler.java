@@ -7,5 +7,6 @@ import reactor.core.publisher.Flux;
 public interface PageHandler {
 
     String getPageType();
-    Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType);
+    Flux<String> handlePageType(PageContext context , String userMessage , ChatRequest.AiModelType modelType,
+                                String apiKey , String model);
 }

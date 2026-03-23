@@ -14,7 +14,7 @@ async function mountFloatingBtn(shadow){
     const [cssText,html] = await Promise.all([
         fetch(
         chrome.runtime.getURL('../ui/floating-button-ui/floating-button.css')
-    ).then(r => r.text()),
+    ).then(res => res.text()),
 
     fetch(chrome.runtime.getURL('../ui/floating-button-ui/floating-button.html')).then(
         res => res.text())

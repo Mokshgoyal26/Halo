@@ -6,6 +6,7 @@ import com.haloai.halo_Ai_backend.DTO.ConversationHistory.MessageDto;
 import com.haloai.halo_Ai_backend.DTO.Security.LogoutRequest;
 import com.haloai.halo_Ai_backend.service.ChatRequestService;
 import com.haloai.halo_Ai_backend.service.ConversationServiceImp;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,11 @@ public class ChatMessageController {
 
 
     @PostMapping(value = "/chatMessage" , produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Flux<String> aiResponse(@RequestBody ChatRequest request , @AuthenticationPrincipal UserDetails userDetails){
-        System.out.println("request : " + request);
-        System.out.println("pageType: "+request.getPageData().getPageType());
+    public Flux<String> aiResponse(@RequestBody @Valid  ChatRequest request ,
+                                   @AuthenticationPrincipal UserDetails userDetails){
+
+        log.info("request: {}", request);
+        log.info("pageType: {}", request.getPageData().getPageType());
 
         Flux<String> responseStream =  dataService.handleRequest(request).cache();
 
@@ -49,12 +52,13 @@ public class ChatMessageController {
                                     fullResponse
                             )
                         )
-                .subscribe();
+                .subscribe(
+                        null,
+                        error -> log.error("failed to save conversation{} ",error.getMessage())
+                );
 
 
         log.info("response : {}",responseStream);
-        System.out.println("response : "+responseStream);
-
         return responseStream;
     }
 

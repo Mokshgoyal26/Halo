@@ -10,7 +10,7 @@ public interface AiProvider {
         @Param prompt input prompt to process
         @return Ai generated response
      */
-    Flux<String> generateResponse(String prompt);
+    Flux<String> generateResponse(String prompt , String apiKey , String model);
 
     ChatRequest.AiModelType getModelType();
 }

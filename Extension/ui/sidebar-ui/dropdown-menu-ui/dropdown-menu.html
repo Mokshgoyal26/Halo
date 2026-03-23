@@ -1,6 +1,6 @@
 <div class="dropdown-page-wrapper">
 
-    <!-- dropdown main page-->
+    <!-- PAGE 1: main menu -->
     <div class="dropdown-menu-container">
 
         <button class="menu-items chat-history">
@@ -9,7 +9,7 @@
             </svg>
             Chat History
         </button>
-    
+
         <button class="menu-items settings">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"/>
@@ -17,9 +17,9 @@
             </svg>
             Settings
         </button>
-    
+
         <div class="menu-divider"></div>
-    
+
         <button class="menu-items logout">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -28,11 +28,10 @@
             </svg>
             Logout
         </button>
-    
+
     </div>
 
-    <!-- chat history page-->
-
+    <!-- PAGE 2: chat history -->
     <div class="dropdown-chatHistory-page hidden">
         <div class="chatHistory-header">
             <button class="back-btn">
@@ -42,7 +41,144 @@
             </button>
             <span>Chat History</span>
         </div>
-
         <div class="chatHistory-list"></div>
     </div>
+
+    <!-- PAGE 3: settings -->
+    <div class="dropdown-settings-page hidden">
+        <div class="settings-header">
+            <button class="settings-back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <span>Settings</span>
+        </div>
+
+        <div class="settings-menu">
+            <button class="menu-items billing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                Billing & API Keys
+                <svg class="chevron-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: billing / api keys -->
+    <div class="dropdown-billing-page hidden">
+        <div class="settings-header">
+            <button class="settings-back-btn billing-back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <span>Billing & API Keys</span>
+        </div>
+
+        <div class="settings-body">
+            <p class="settings-section-label">API Keys</p>
+            <p class="settings-section-hint">Keys are sent securely over HTTPS and never stored on our servers.</p>
+
+            <!-- Claude -->
+            <div class="api-key-card" data-provider="CLAUDE">
+                <div class="api-key-card-header">
+                    <div class="provider-info">
+                        <div class="provider-logo claude-logo">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.304 12.235c.306-.088.477-.31.477-.65 0-.45-.34-.72-.9-.72h-1.18v2.59h.44v-1.15h.56l.71 1.15h.5l-.77-1.22zm-.24-.33h-.7v-.73h.7c.3 0 .48.14.48.37 0 .22-.18.36-.48.36zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1.5-5h3c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2h-3v6zm1.5-4.5h1.5c.28 0 .5.22.5.5v2c0 .28-.22.5-.5.5H12V8.5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="provider-name">Anthropic</span>
+                            <span class="provider-model">Claude</span>
+                        </div>
+                    </div>
+                    <span class="key-status-badge unconfigured" data-badge="CLAUDE">Not set</span>
+                </div>
+                <div class="api-key-input-row">
+                    <input type="password" class="api-key-input" placeholder="sk-ant-..." data-input="CLAUDE" autocomplete="off" spellcheck="false"/>
+                    <button class="key-toggle-btn" data-toggle="CLAUDE">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="api-key-actions">
+                    <button class="key-save-btn" data-save="CLAUDE">Save key</button>
+                    <button class="key-clear-btn hidden" data-clear="CLAUDE">Remove</button>
+                </div>
+            </div>
+
+            <!-- OpenAI -->
+            <div class="api-key-card" data-provider="OPENAI">
+                <div class="api-key-card-header">
+                    <div class="provider-info">
+                        <div class="provider-logo openai-logo">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.28 9.28a5.997 5.997 0 0 0-.52-4.93 6.07 6.07 0 0 0-6.53-2.91A6.01 6.01 0 0 0 10.71 0a6.07 6.07 0 0 0-5.78 4.2 6.01 6.01 0 0 0-4 2.91 6.07 6.07 0 0 0 .74 7.11 5.997 5.997 0 0 0 .52 4.93 6.07 6.07 0 0 0 6.53 2.91A6.01 6.01 0 0 0 13.29 24a6.07 6.07 0 0 0 5.79-4.2 6.01 6.01 0 0 0 4-2.91 6.07 6.07 0 0 0-.74-7.11zM13.29 22.5a4.5 4.5 0 0 1-2.89-1.05l.14-.08 4.8-2.77a.79.79 0 0 0 .4-.68v-6.78l2.03 1.17a.07.07 0 0 1 .04.05v5.6a4.51 4.51 0 0 1-4.52 4.54zm-9.7-4.13a4.5 4.5 0 0 1-.54-3.03l.14.09 4.8 2.77a.77.77 0 0 0 .78 0l5.86-3.38v2.34a.08.08 0 0 1-.03.06l-4.85 2.8a4.51 4.51 0 0 1-6.16-1.65zm-1.26-10.5a4.5 4.5 0 0 1 2.35-1.98v5.7a.77.77 0 0 0 .39.67l5.84 3.37-2.03 1.17a.07.07 0 0 1-.07 0L4.08 14a4.51 4.51 0 0 1-.75-6.13zm16.67 3.87l-5.86-3.39 2.03-1.17a.07.07 0 0 1 .07 0l4.72 2.73a4.5 4.5 0 0 1-.7 8.12v-5.7a.77.77 0 0 0-.39-.59zm2.02-3.04l-.14-.09-4.79-2.78a.77.77 0 0 0-.78 0L9.45 9.82V7.48a.07.07 0 0 1 .03-.06l4.85-2.8a4.51 4.51 0 0 1 6.69 4.68zm-12.7 4.18l-2.03-1.17a.07.07 0 0 1-.04-.06V6.07a4.51 4.51 0 0 1 7.4-3.46l-.14.08-4.8 2.77a.79.79 0 0 0-.4.68l-.01 6.77zm1.1-2.37l2.61-1.5 2.61 1.5v3l-2.61 1.5-2.61-1.5v-3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="provider-name">OpenAI</span>
+                            <span class="provider-model">GPT-4o</span>
+                        </div>
+                    </div>
+                    <span class="key-status-badge unconfigured" data-badge="OPENAI">Not set</span>
+                </div>
+                <div class="api-key-input-row">
+                    <input type="password" class="api-key-input" placeholder="sk-..." data-input="OPENAI" autocomplete="off" spellcheck="false"/>
+                    <button class="key-toggle-btn" data-toggle="OPENAI">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="api-key-actions">
+                    <button class="key-save-btn" data-save="OPENAI">Save key</button>
+                    <button class="key-clear-btn hidden" data-clear="OPENAI">Remove</button>
+                </div>
+            </div>
+
+            <!-- Gemini -->
+            <div class="api-key-card" data-provider="GEMINI">
+                <div class="api-key-card-header">
+                    <div class="provider-info">
+                        <div class="provider-logo gemini-logo">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 24A14.29 14.29 0 0 0 0 12 14.29 14.29 0 0 0 12 0a14.29 14.29 0 0 0 12 12 14.29 14.29 0 0 0-12 12z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="provider-name">Google</span>
+                            <span class="provider-model">Gemini</span>
+                        </div>
+                    </div>
+                    <span class="key-status-badge unconfigured" data-badge="GEMINI">Not set</span>
+                </div>
+                <div class="api-key-input-row">
+                    <input type="password" class="api-key-input" placeholder="AIza..." data-input="GEMINI" autocomplete="off" spellcheck="false"/>
+                    <button class="key-toggle-btn" data-toggle="GEMINI">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="api-key-actions">
+                    <button class="key-save-btn" data-save="GEMINI">Save key</button>
+                    <button class="key-clear-btn hidden" data-clear="GEMINI">Remove</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </div>
+

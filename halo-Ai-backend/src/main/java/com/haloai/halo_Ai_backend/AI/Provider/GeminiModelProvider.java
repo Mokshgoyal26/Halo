@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -17,9 +18,6 @@ public class GeminiModelProvider implements AiProvider{
 
     private final ObjectMapper objectMapper;
     private final WebClient webClient;
-
-    private String apiKey;
-    private String model;
 
     public GeminiModelProvider(WebClient.Builder webClientBuilder , ObjectMapper objectMapper){
         this.webClient = webClientBuilder
@@ -30,7 +28,7 @@ public class GeminiModelProvider implements AiProvider{
     }
 
     @Override
-    public Flux<String> generateResponse(String prompt){
+    public Flux<String> generateResponse(String prompt , String apiKey , String model){
 
         GeminiRequestDto request = buildRequest(prompt);
 
@@ -42,7 +40,7 @@ public class GeminiModelProvider implements AiProvider{
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
-                                .map(body -> new RuntimeException("Gemini API error: " + body))
+                                .flatMap(body -> Mono.error(new RuntimeException("Gemini API error: " + body)))
                 )
                 .bodyToFlux(String.class)
                 .filter(chunk -> !chunk.isBlank())
@@ -79,6 +77,7 @@ public class GeminiModelProvider implements AiProvider{
         }
     }
 
+    @Override
     public ChatRequest.AiModelType getModelType(){
         return ChatRequest.AiModelType.GEMINI;
     }
