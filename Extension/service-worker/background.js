@@ -1,3 +1,5 @@
+let isChatRequestInFlight = false;
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Received message in background:", message);
 
@@ -12,6 +14,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.type === 'CHAT_REQUEST'){
         (async () => {
             try {
+
+                if(isChatRequestInFlight){
+                    sendResponse({type:'ASSISTANT_ERROR', locked: true});
+                    return;
+                }
+
+                isChatRequestInFlight = true;
+
                 const data = message.payload;
                 console.log("prompt:", data);
 
@@ -54,6 +64,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     const {done , value} = await reader.read();
 
                     if(done){
+
+                        isChatRequestInFlight = false;
+
                         chrome.tabs.sendMessage(sender.tab.id,{
                             type:'ASSISTANT_STREAM_END'
                         });
@@ -81,6 +94,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
                 console.error("Fetch or backend error:", err);
 
+                isChatRequestInFlight = false;
                 sendResponse({
                     type: 'ASSISTANT_ERROR',
                     payload: "Network Error or Backend Error : " + err.message

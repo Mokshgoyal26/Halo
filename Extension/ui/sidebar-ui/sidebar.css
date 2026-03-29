@@ -45,9 +45,6 @@
     cursor:pointer;
 }
 
-
-
-
 .header-left-container{
     padding-left:15px;
     gap:10px;
@@ -149,7 +146,7 @@
 }
 
 
-.open-signup-page {
+.sign-in-btn {
     height: 30px;
     padding: 0 10px;
     border-radius: 5px;
@@ -158,36 +155,76 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-
     background-color: transparent;
     color: rgba(255, 255, 255, 0.85);
     border: 1px solid transparent;
-
-    /* glowing border */
     box-shadow: 0 0 0 1px rgba(41, 121, 255, 0.25),
                 0 0 6px rgba(41, 121, 255, 0.2),
                 0 0 12px rgba(41, 121, 255, 0.1);
-
     font-family: Inter, system-ui, sans-serif;
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.1px;
-
     cursor: pointer;
     transition: box-shadow 120ms ease, color 120ms ease, transform 80ms ease;
 }
 
-.open-signup-page:hover {
+.sign-in-btn:hover {
     color: #fff;
     box-shadow: 0 0 0 1px rgba(41, 121, 255, 0.5),
                 0 0 10px rgba(41, 121, 255, 0.35),
                 0 0 20px rgba(41, 121, 255, 0.15);
 }
 
-.open-signup-page:active {
+.sign-in-btn:active {
     transform: scale(0.96);
     box-shadow: 0 0 0 1px rgba(41, 121, 255, 0.3),
                 0 0 6px rgba(41, 121, 255, 0.2);
+}
+
+.user-avatar-btn {
+    all: unset;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: background 200ms ease,
+                border-color 200ms ease,
+                transform 200ms ease;
+}
+
+.user-avatar-btn:hover {
+    background: #333333;
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: scale(1.04);
+}
+
+.user-avatar-btn:active {
+    transform: scale(0.96);
+    background: #222222;
+}
+
+.avatar-letter {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .close-btn {
@@ -725,6 +762,12 @@
 
 .send-btn:active {
     transform: scale(0.94);
+}
+
+.send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .send-btn-icon {

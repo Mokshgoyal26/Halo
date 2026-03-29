@@ -51,10 +51,15 @@ async function mountSignUpPage(sidebarContainer){
         signupPageElement = sidebarContainer.querySelector('.auth-page');
         console.log('signup-page existed: ', signupPageElement);
 
+        // clear all the inputs on loading signup page 
+        signupPageElement.querySelectorAll('input').forEach(input => input.value = '');
+
+        blockPageShortcuts(signupPageElement);
         closeButtonFeature(signupPageElement);
         handleSignupRequest(signupPageElement);
         handleLoginRequest(signupPageElement);
         handleAuthFormToggle(signupPageElement);
+        
         //handleAuthPageDrag(signupPageElement);
             
     }else{
@@ -104,6 +109,19 @@ function handleSignupRequest(signupPage){
         return ;
     }
 
+    usernameInput.addEventListener('keydown',(e) =>{
+        if(e.key === 'Enter') signUpBtn.click();
+    });
+
+    passwordInput.addEventListener('keydown',(e) =>{
+        if(e.key === 'Enter') signUpBtn.click();
+    });
+
+    emailInput.addEventListener('keydown',(e) =>{
+        if(e.key === 'Enter') signUpBtn.click();
+    });
+
+
     signUpBtn.addEventListener('click' , async () =>{
         console.log('signupBtn clicked ... ');
         const user = usernameInput.value;
@@ -124,6 +142,12 @@ function handleSignupRequest(signupPage){
             }
         }, (response) =>{
             handleAuthMessageOnUi(response,signupErrorDiv);
+
+            if(response.type === 'SIGN_UP_RESULT'){
+                setTimeout(() =>{
+                    signupPage.classList.add('hidden');
+                },1500);
+            }
         }); 
     });
 } 
@@ -149,6 +173,14 @@ function handleLoginRequest(signupPage){
         return ;
     }
 
+    usernameInput.addEventListener('keydown',(e) =>{
+        if(e.key === 'Enter') loginBtn.click();
+    });
+
+    passwordInput.addEventListener('keydown',(e) =>{
+        if(e.key === 'Enter') loginBtn.click();
+    });
+
     loginBtn.addEventListener('click' , async () =>{
         console.log('login button  clicked ... ');
         const user = usernameInput.value;
@@ -167,10 +199,18 @@ function handleLoginRequest(signupPage){
             }
         }, (response) =>{
             
-            handleAuthMessageOnUi(response, loginErrorDiv);
+            if(response.type === 'LOGIN_ERROR'){
+                handleAuthMessageOnUi(response, loginErrorDiv);
+            }
 
             if(response.type === 'LOGIN_REPLY' && response.payload.username){
                 console.log('username recieved from login_reply : ',response.payload.username);
+
+                handleAuthMessageOnUi(response, loginErrorDiv);
+
+                setTimeout(() =>{
+                    signupPage.classList.add('hidden');
+                },1500);
 
                 window.dispatchEvent(new CustomEvent('halo:login' , {
                     detail: {'username':response.payload.username}
@@ -272,7 +312,7 @@ function handleAuthMessageOnUi(response , authMessageDiv){
     if(!authMessageDiv) return;
 
     let isError = response.type.includes('ERROR');
-    let isSuccess = response.type.includes('RESULT');
+    let isSuccess = response.type.includes('RESULT') || response.type.includes('REPLY');
 
     let message = '';
 
@@ -297,7 +337,18 @@ function handleAuthMessageOnUi(response , authMessageDiv){
 
     }else if(isSuccess){
 
-        authMessageDiv.textContent = response.payload || 'success!';
+        const payload = response.payload;
+
+        if(payload && typeof payload === 'object' && payload.message){
+
+            message = payload.message;
+        }else if(typeof payload === 'string'){
+            message = payload;
+        }else{
+            message = 'Success !';
+        }
+
+        authMessageDiv.textContent = message;
 
         authMessageDiv.classList.remove('hidden','error');
         authMessageDiv.classList.add('success');
@@ -309,3 +360,19 @@ function handleAuthMessageOnUi(response , authMessageDiv){
 }
 
 
+function blockPageShortcuts(signupPage){
+    const events = [
+        'keydown',
+        'keypress',
+        'keyup'
+    ];
+
+    events.forEach(type =>{
+        signupPage.addEventListener(type , (e) =>{
+
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+        }, true);
+    });
+
+}

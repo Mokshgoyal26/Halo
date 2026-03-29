@@ -8,7 +8,7 @@ let shadowRootRef = null;
 let userInput;
 let conversationId = null;
 let selected_Model = 'OPENAI';
-
+let isRequestInFlight = false;
 
 async function mountSidebar(shadow){
 
@@ -143,22 +143,27 @@ export async function initSidebarUI(shadow){
 
             }else if(message.type === 'ASSISTANT_STREAM_END'){
                 finalizeAiResponseStream();
+
+                isRequestInFlight = false;
+
+                const sendbtn = shadowRootRef.querySelector('.send-btn');
+                sendbtn.disabled = false;
             }
+
         });
 
         await MountUsernameOnEmptyStateTitle(shadow);
 
-        
-        const triggerBtn = shadow.querySelector('.dropdown-trigger');
-        await mountDropdownMenuPage(triggerBtn);
 
+        const avatarBtn = shadow.querySelector('.user-avatar-btn');
+        await mountDropdownMenuPage(sidebarE1);
 
         const result = await chrome.storage.local.get('conversationId');
         if(result.conversationId){
             conversationId = result.conversationId;
         }
 
-        initDropdownMenuEvents(triggerBtn , (convo) =>{
+        initDropdownMenuEvents(sidebarE1 , avatarBtn , (convo) =>{
             loadConversationIntoSidebar(convo);
         });
 
@@ -173,6 +178,8 @@ export async function initSidebarUI(shadow){
             contentMessages = [];
             conversationId = null;
             
+            setAuthState(null);
+
             const titleElement = shadowRootRef.querySelector('.empty-state-title');
             if(titleElement) titleElement.textContent = 'Hi 👋';
 
@@ -181,6 +188,12 @@ export async function initSidebarUI(shadow){
 
 
         handleSessionExpired(sidebarE1);
+
+        const authResult = await chrome.storage.local.get('username');
+
+        if(authResult.username){
+            setAuthState(authResult.username);
+        }
     }
 
 
@@ -189,6 +202,13 @@ export async function initSidebarUI(shadow){
         const userMessage = userInput.value.trim();
 
         if(!userMessage) return;
+
+        if(isRequestInFlight) return;
+
+        isRequestInFlight = true;
+
+        const sendbtn = shadowRootRef.querySelector('.send-btn');
+        sendbtn.disabled = true;
 
         if(!conversationId){
             conversationId = crypto.randomUUID();
@@ -223,6 +243,11 @@ export async function initSidebarUI(shadow){
 
                     .catch(err =>{
                         console.log('Error sending chat request: ',err);
+
+                        if(err !== 'locked'){
+                            isRequestInFlight = false;
+                            sendbtn.disabled = false;
+                        }
                     });
 
     };
@@ -284,6 +309,11 @@ export async function initSidebarUI(shadow){
                         }
     
                         if(response.type === 'ASSISTANT_ERROR'){
+
+                            if(response.locked){
+                                return reject('locked');
+                            }
+                            
                             return reject(response.payload);
                         }
     
@@ -653,9 +683,10 @@ const blockPageShortcuts = (root) =>{
     events.forEach(type =>{
         root.addEventListener(type, (e) =>{
 
+            e.stopImmediatePropagation();
             e.stopPropagation();
 
-        });
+        },true);
     });
 }
 
@@ -709,6 +740,8 @@ async function MountUsernameOnEmptyStateTitle(shadow){
         if(titleElement && e.detail.username){
             titleElement.textContent = `Hi ${e.detail.username} 👋`;
         }
+
+        setAuthState(e.detail.username);
 
     });
 
@@ -790,7 +823,27 @@ function handleSessionExpired(sidebarE1){
                 loginErrorDiv.classList.remove('hidden','success');
                 loginErrorDiv.classList.add('error');
             }
+
+            setAuthState(null);
         }
 
     });
+}
+
+
+function setAuthState(username){
+
+    const signInBtn = shadowRootRef.querySelector('.sign-in-btn');
+    const avatarBtn = shadowRootRef.querySelector('.user-avatar-btn');
+    const avatarLetter = shadowRootRef.querySelector('.avatar-letter');
+
+    if(username){
+        signInBtn.classList.add('hidden');
+        avatarBtn.classList.remove('hidden');
+        avatarLetter.textContent = username.charAt(0);
+    }else{
+        avatarBtn.classList.add('hidden');
+        signInBtn.classList.remove('hidden');
+        avatarLetter.textContent = '';
+    }
 }

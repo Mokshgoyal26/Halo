@@ -1,9 +1,9 @@
 
-export async function mountDropdownMenuPage(triggerBtn){
+export async function mountDropdownMenuPage(container){
 
     console.log('dropdwon menu page mount function called...');
 
-    const dropdownPage = triggerBtn.querySelector('.dropdown-page-wrapper');
+    const dropdownPage = container.querySelector('.dropdown-page-wrapper');
 
     if(!dropdownPage){
 
@@ -17,14 +17,14 @@ export async function mountDropdownMenuPage(triggerBtn){
     
             const template = document.createElement('template');
             template.innerHTML = html.trim();
-            triggerBtn.appendChild(template.content.cloneNode(true));
+            container.appendChild(template.content.cloneNode(true));
     
             const baseUrl = chrome.runtime.getURL('/assets');
             const resolvedCss = css.replace(/\.\.\/assets\//g, baseUrl);
             const style = document.createElement('style');
             style.innerText = resolvedCss;
             style.setAttribute('halo-dropdown-menu-page','');
-            triggerBtn.appendChild(style);
+            container.appendChild(style);
 
         }catch(error){
             console.error('failed to mount dropdown-menu-page : ',error);
@@ -37,11 +37,11 @@ export async function mountDropdownMenuPage(triggerBtn){
 
 
 
-export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
+export function initDropdownMenuEvents(container ,avatarBtn , onConversationSelect){
 
     console.log("init dropdown menu function called ....");
 
-    const wrapper = triggerBtn.querySelector('.dropdown-page-wrapper');
+    const wrapper = container.querySelector('.dropdown-page-wrapper');
     const menuPage = wrapper.querySelector('.dropdown-menu-container');
     const historyPage = wrapper.querySelector('.dropdown-chatHistory-page');
     const chatHistoryBtn = wrapper.querySelector('.menu-items.chat-history');
@@ -64,7 +64,7 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
     });
 
 
-    triggerBtn.addEventListener('click',(e) =>{
+    avatarBtn.addEventListener('click',(e) =>{
 
         e.stopPropagation();
         wrapper.classList.toggle('open');
@@ -72,7 +72,7 @@ export function initDropdownMenuEvents(triggerBtn , onConversationSelect){
 
     document.addEventListener('click' ,(e) =>{
 
-        if(e.composedPath().includes(triggerBtn)) return;
+        if(e.composedPath().includes(avatarBtn)) return;
         wrapper.classList.remove('open');
 
         historyPage.classList.add('hidden');
